@@ -13,3 +13,22 @@
 ## i18n 翻译器
 
 本工具适用于 i18n 文件翻译或 JSON 等规则文本翻译，同时支持规则文本的批量处理。默认使用 Google Translate API。
+
+## Deploy
+
+### Deploy With Vercel
+
+[![Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frockbenben%2Ftools-by-ai%2Ftree%2Fgh-pages)
+
+### Installation
+
+```shell
+# Installation
+yarn
+
+# Local Development
+yarn start
+
+# Build: This command generates static content into the `build` directory
+yarn build
+```
