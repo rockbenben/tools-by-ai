@@ -24,8 +24,14 @@ const menuItems = [
   },
   {
     key: "4",
-    path: "https://newzone.top/",
+    path: "https://www.aishort.top/",
     title: "ChatGPT Shortcut",
+    external: true,
+  },
+  {
+    key: "5",
+    path: "https://prompt.newzone.top/",
+    title: "IMGPrompt",
     external: true,
   },
 ];
