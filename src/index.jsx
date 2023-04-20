@@ -35,6 +35,8 @@ class RegexMatcher extends React.Component {
     prefixText2: "",
     suffixText1: "",
     suffixText2: "",
+    insertNode: "",
+    rule4Data: "",
   };
 
   // 更新输入文本和正则规则的状态
@@ -80,34 +82,98 @@ class RegexMatcher extends React.Component {
   };
   // Rule 2 logic
   processRule2 = () => {
-    const { inputText, node1, node2, prefixText1, prefixText2, suffixText1, suffixText2 } = this.state;
+    const {
+      inputText,
+      node1,
+      node2,
+      prefixText1,
+      prefixText2,
+      suffixText1,
+      suffixText2,
+    } = this.state;
     const json = JSON.parse(inputText);
-  
+
     let result = "";
-  
+
     const processNode = (obj) => {
       if (typeof obj === "object") {
         for (const key in obj) {
           if (key === node1 || (node2 && key === node2)) {
             const value = obj[key];
-  
-            const formattedPrefixText = key === node1 ? prefixText1 : prefixText2;
-            const formattedSuffixText = key === node1 ? suffixText1 : suffixText2;
-  
-            const formattedText = `${formattedPrefixText.replace("{value}", value)}${value}${formattedSuffixText.replace("{value}", value)}\n`;
-  
+
+            const formattedPrefixText =
+              key === node1 ? prefixText1 : prefixText2;
+            const formattedSuffixText =
+              key === node1 ? suffixText1 : suffixText2;
+
+            const formattedText = `${formattedPrefixText.replace(
+              "{value}",
+              value
+            )}${value}${formattedSuffixText.replace("{value}", value)}\n`;
+
             result += formattedText;
           }
-  
+
           processNode(obj[key]);
         }
       }
     };
-  
+
     processNode(json);
-  
+
     this.setState({ result });
     message.success(`处理成功，共处理了${Object.keys(json).length}个条目。`);
+  };
+  processRule3 = () => {
+    const { inputText, node1, insertNode } = this.state;
+    const json = JSON.parse(inputText);
+
+    let result = "";
+    let counter = 1;
+
+    const processNode = (obj) => {
+      if (typeof obj === "object") {
+        for (const key in obj) {
+          if (key === node1) {
+            obj[insertNode] = counter;
+            //counter++;//不取消的话，则不断叠加
+          }
+          processNode(obj[key]);
+        }
+      }
+    };
+
+    processNode(json);
+
+    result = JSON.stringify(json, null, 2);
+
+    this.setState({ result });
+    message.success(`处理成功，共处理了${Object.keys(json).length}个条目。`);
+  };
+  processRule4 = () => {
+    const { inputText, rule4Data } = this.state;
+
+    try {
+      const originalData = JSON.parse(inputText);
+      const countData = JSON.parse(rule4Data);
+
+      const countDataMap = new Map(
+        countData.map(({ card_id, count }) => [card_id, count])
+      );
+
+      const updatedData = originalData.map((item) => {
+        if (countDataMap.has(item.id.toString())) {
+          return { ...item, weight: countDataMap.get(item.id.toString()) };
+        }
+        return item;
+      });
+
+      const result = JSON.stringify(updatedData, null, 2);
+      this.setState({ result });
+      message.success(`处理成功，共更新了${countData.length}个条目。`);
+    } catch (error) {
+      message.error("无法解析输入的 JSON 数据，请检查格式是否正确。");
+    }
   };
 
   handleMatchClick = () => {
@@ -115,8 +181,13 @@ class RegexMatcher extends React.Component {
       this.processRule1();
     } else if (this.state.currentRule === 2) {
       this.processRule2();
+    } else if (this.state.currentRule === 3) {
+      this.processRule3();
+    } else if (this.state.currentRule === 4) {
+      this.processRule4();
     }
   };
+
   // 复制结果到剪贴板
   handleCopyClick = () => {
     navigator.clipboard.writeText(this.state.result).then(() => {
@@ -128,8 +199,11 @@ class RegexMatcher extends React.Component {
     const ruleDescription =
       this.state.currentRule === 1
         ? "本页面是一个正则匹配工具，用于根据用户输入的正则表达式查找目标文本中的匹配项。用户可以在“输入文本框”中输入需要处理的文本，在“正则规则框”中输入相应的正则表达式。点击“匹配”按钮后，工具会根据正则表达式在输入文本中搜索匹配项。匹配成功后，页面会显示匹配数量并在“匹配结果框”中显示匹配到的内容。用户可以根据需要点击“复制结果”按钮，将匹配结果复制到剪贴板。"
-        : "请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会根据 JSON 数据中的 '节点 1' 和 '节点 2' 字段进行相应的文本操作。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。";
-
+        : this.state.currentRule === 2
+        ? "请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会根据 JSON 数据中的 '节点 1' 和 '节点 2' 字段进行相应的文本操作。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。"
+        : this.state.currentRule === 3
+        ? "请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会在 JSON 数据中查找数组类型的节点，并在拥有指定节点的每个数组元素内插入新的序号节点。插入成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。"
+        : "请在输入框中输入原始 JSON 数据和计数 JSON 数据，然后点击“匹配”按钮。工具会根据计数数据中的 'card_id' 与原始数据中的 'id' 匹配，并更新原始数据中的 'weight' 值。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。";
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <Helmet>
@@ -149,6 +223,8 @@ class RegexMatcher extends React.Component {
           >
             <Radio value={1}>正则处理</Radio>
             <Radio value={2}>处理 JSON 节点（无需正则）</Radio>
+            <Radio value={3}>处理 JSON 节点并插入新序号节点</Radio>
+            <Radio value={4}>批量匹配 JSON 并更新数值</Radio>
           </Radio.Group>
           <Typography.Paragraph
             type="secondary"
@@ -178,6 +254,34 @@ class RegexMatcher extends React.Component {
                   style={{ width: "100%", marginBottom: "16px" }}
                 />
               )}
+              {this.state.currentRule === 3 && (
+                <>
+                  <Input
+                    name="node1"
+                    placeholder="请输入要匹配的节点名称"
+                    value={this.state.node1}
+                    onChange={this.handleInputChange}
+                    style={{ width: "100%", marginBottom: "16px" }}
+                  />
+                  <Input
+                    name="insertNode"
+                    placeholder="请输入要插入的新节点名称"
+                    value={this.state.insertNode}
+                    onChange={this.handleInputChange}
+                    style={{ width: "100%", marginBottom: "16px" }}
+                  />
+                </>
+              )}
+              {this.state.currentRule === 4 && (
+                <TextArea
+                  name="rule4Data"
+                  placeholder="请输入计数数据"
+                  value={this.state.rule4Data}
+                  onChange={this.handleInputChange}
+                  style={{ width: "100%", marginBottom: "16px" }}
+                />
+              )}
+
               {this.state.currentRule === 2 && (
                 <>
                   <Input
@@ -228,7 +332,7 @@ class RegexMatcher extends React.Component {
                 onClick={this.handleMatchClick}
                 style={{ marginBottom: "16px" }}
               >
-                匹配
+                匹配并处理文本
               </Button>
               <Button
                 onClick={this.handleCopyClick}
