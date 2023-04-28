@@ -24,20 +24,25 @@ const menuItems = [
   },
   {
     key: "3",
+    path: "/text-splitter",
+    title: "文本分割",
+  },
+  {
+    key: "6",
     path: "https://www.aishort.top/",
     title: "ChatGPT Shortcut",
     icon: <ExperimentOutlined />,
     external: true,
   },
   {
-    key: "4",
+    key: "7",
     path: "https://prompt.newzone.top/",
     title: "IMGPrompt",
     icon: <BgColorsOutlined />,
     external: true,
   },
   {
-    key: "5",
+    key: "8",
     path: "https://newzone.top/",
     title: "LearnData 开源笔记",
     icon: <ThunderboltOutlined />,
