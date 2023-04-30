@@ -152,6 +152,7 @@ class RegexMatcher extends React.Component {
     this.setState({ result });
     message.success(`处理成功，共处理了${Object.keys(json).length}个条目。`);
   };
+
   processRule4 = () => {
     const { inputText, rule4Data } = this.state;
 
@@ -164,6 +165,10 @@ class RegexMatcher extends React.Component {
       );
 
       const updatedData = originalData.map((item) => {
+        //对失效 prompt 进行降权
+        if (item.title && item.title.includes("AI DAN")) {
+          return { ...item, weight: 0 };
+        }
         if (countDataMap.has(item.id.toString())) {
           return { ...item, weight: countDataMap.get(item.id.toString()) };
         }
