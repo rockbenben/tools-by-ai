@@ -19,13 +19,18 @@ const menuItems = [
   },
   {
     key: "2",
-    path: "/translate",
-    title: "i18n JSON 翻译",
+    path: "/text-splitter",
+    title: "文本分割",
   },
   {
     key: "3",
-    path: "/text-splitter",
-    title: "文本分割",
+    path: "/subtitle-translator",
+    title: "字幕翻译",
+  },
+  {
+    key: "4",
+    path: "/json-translate",
+    title: "i18n JSON 翻译",
   },
   {
     key: "6",

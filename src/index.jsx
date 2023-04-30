@@ -15,8 +15,9 @@ import "./index.css";
 import "antd/dist/reset.css";
 import { Helmet } from "react-helmet";
 import NavBar from "./NavBar";
-import Translate from "./components/Translate";
+import Translate from "./components/jsonTranslate";
 import TextSplitter from "./components/TextSplitter";
+import SubtitleTranslator from './components/SubtitleTranslator';
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -379,8 +380,9 @@ ReactDOM.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<RegexMatcher />} />
-        <Route path="/translate" element={<Translate />} />
         <Route path="/text-splitter" element={<TextSplitter />} />
+        <Route path="/subtitle-translator" element={<SubtitleTranslator />} />
+        <Route path="/json-translate" element={<Translate />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
