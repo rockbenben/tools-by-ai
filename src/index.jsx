@@ -166,7 +166,7 @@ class RegexMatcher extends React.Component {
 
       const updatedData = originalData.map((item) => {
         //对失效 prompt 进行降权
-        if (item.title && item.title.includes("AI DAN")) {
+        if (item.title && (item.title.includes("AI DAN") || item.title.includes("DAN 10.0") || item.title.includes("DAN 11.0"))) {
           return { ...item, weight: 0 };
         }
         if (countDataMap.has(item.id.toString())) {
