@@ -10,7 +10,7 @@ import {
   Select,
   Form,
   Spin,
-  Card
+  Card,
 } from "antd";
 import axios from "axios";
 import NavBar from "../NavBar";
@@ -21,14 +21,14 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 // Component for label and input box
-const LabeledInput = ({label, value, onChange}) => (
+const LabeledInput = ({ label, value, onChange }) => (
   <Form.Item label={label}>
     <Input value={value} onChange={onChange} />
   </Form.Item>
 );
 
 // Component for label and select box
-const LabeledSelect = ({label, value, onChange, options}) => (
+const LabeledSelect = ({ label, value, onChange, options }) => (
   <Form.Item label={label}>
     <Select value={value} onChange={onChange}>
       {options.map((option) => (
@@ -60,14 +60,6 @@ const Translate = () => {
     // Add more languages as needed...
   ];
 
-  const handleTranslateClick = async () => {
-    setIsLoading(true);  // Add this line
-    const input = JSON.parse(inputText);
-    const translatedData = await translateNode(input, inputKey, outputKey);
-    setResult(JSON.stringify(translatedData, null, 2));
-    setIsLoading(false);  // Add this line
-  };
-
   const translateText = async (text) => {
     const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
 
@@ -79,8 +71,21 @@ const Translate = () => {
       });
       return response.data.data.translations[0].translatedText;
     } catch (error) {
+      // Handle API error
       console.error("Error translating text:", error);
-      return "";
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        throw new Error(
+          `API 错误：${error.response.data.error.code} ${error.response.data.error.message}`
+        );
+      } else if (error.request) {
+        // The request was made but no response was received
+        throw new Error("API 错误：没有收到服务器响应。");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        throw new Error("API 错误：请求设置出错。");
+      }
     }
   };
 
@@ -97,13 +102,20 @@ const Translate = () => {
 
   const translateNode = async (node, inputKey, outputKey, depth = 0) => {
     let newObj = {};
+
     for (let key in node) {
       if (typeof node[key] === "object") {
-        newObj[key] = await translateNode(node[key], inputKey, outputKey, depth + 1);
+        newObj[key] = await translateNode(
+          node[key],
+          inputKey,
+          outputKey,
+          depth + 1
+        );
       } else {
         if (key === inputKey) {
           let textToTranslate = node[key];
-          if (textToTranslate) { // Check if the text to translate is not empty
+          if (textToTranslate) {
+            // Check if the text to translate is not empty
             const translatedText = await translateText(textToTranslate);
             newObj[outputKey] = translatedText;
           } else {
@@ -114,9 +126,81 @@ const Translate = () => {
         }
       }
     }
+
     return newObj;
   };
 
+  const handleTranslateClick = async () => {
+    if (!apiKey.trim()) {
+      message.error("API Key 不能为空。");
+      return;
+    }
+    if (!inputKey.trim()) {
+      message.error("输入节点名不能为空。");
+      return;
+    }
+    if (!outputKey.trim()) {
+      message.error("输出节点名不能为空。");
+      return;
+    }
+    if (!inputText.trim()) {
+      message.error("要翻译的文本不能为空。");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const input = JSON.parse(inputText);
+
+      // Check if inputKey or outputKey exists globally
+      let inputKeyFound = false;
+      let outputKeyUsed = false;
+
+      const checkKeys = (node) => {
+        for (let key in node) {
+          if (typeof node[key] === "object") {
+            checkKeys(node[key]);
+          } else {
+            if (key === inputKey) {
+              inputKeyFound = true;
+            }
+            if (key === outputKey) {
+              outputKeyUsed = true;
+            }
+          }
+        }
+      };
+
+      checkKeys(input);
+
+      if (!inputKeyFound) {
+        message.error(`输入键名 "${inputKey}" 找不到。`);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!outputKeyUsed) {
+        message.error(`输出键名 "${outputKey}" 找不到。`);
+        setIsLoading(false);
+        return;
+      }
+
+      const translatedData = await translateNode(input, inputKey, outputKey);
+      setResult(JSON.stringify(translatedData, null, 2));
+    } catch (error) {
+      // Handle errors from translateNode and JSON parse error
+      if (error instanceof SyntaxError) {
+        message.error("JSON 格式错误，请检查您的输入。");
+      } else {
+        // Handle other possible errors
+        message.error(error.message);
+        setIsLoading(false);
+        return;
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
