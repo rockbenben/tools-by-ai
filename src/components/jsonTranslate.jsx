@@ -1,14 +1,88 @@
 import React, { useState } from "react";
-import { Button, Input, Layout, Row, Col, Typography, message } from "antd";
+import {
+  Button,
+  Input,
+  Layout,
+  Row,
+  Col,
+  Typography,
+  message,
+  Select,
+  Form,
+  Spin,
+  Card
+} from "antd";
 import axios from "axios";
 import NavBar from "../NavBar";
 import { Helmet } from "react-helmet";
 
 const { Title } = Typography;
+const { Option } = Select;
+const { TextArea } = Input;
+
+// Component for label and input box
+const LabeledInput = ({label, value, onChange}) => (
+  <Form.Item label={label}>
+    <Input value={value} onChange={onChange} />
+  </Form.Item>
+);
+
+// Component for label and select box
+const LabeledSelect = ({label, value, onChange, options}) => (
+  <Form.Item label={label}>
+    <Select value={value} onChange={onChange}>
+      {options.map((option) => (
+        <Option key={option.value} value={option.value}>
+          {option.label}
+        </Option>
+      ))}
+    </Select>
+  </Form.Item>
+);
+
 const Translate = () => {
   const [result, setResult] = useState("");
   const [inputText, setInputText] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [inputKey, setInputKey] = useState("displayName");
+  const [outputKey, setOutputKey] = useState("langName");
+  const [sourceLanguage, setSourceLanguage] = useState("en");
+  const [targetLanguage, setTargetLanguage] = useState("zh-CN");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Add your supported languages here
+  const languages = [
+    { value: "en", label: "English" },
+    { value: "zh-CN", label: "中文" },
+    { value: "ja", label: "日语" },
+    { value: "ko", label: "韩语" },
+    { value: "es", label: "西班牙语" },
+    // Add more languages as needed...
+  ];
+
+  const handleTranslateClick = async () => {
+    setIsLoading(true);  // Add this line
+    const input = JSON.parse(inputText);
+    const translatedData = await translateNode(input, inputKey, outputKey);
+    setResult(JSON.stringify(translatedData, null, 2));
+    setIsLoading(false);  // Add this line
+  };
+
+  const translateText = async (text) => {
+    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+
+    try {
+      const response = await axios.post(url, {
+        q: text,
+        target: targetLanguage,
+        source: sourceLanguage,
+      });
+      return response.data.data.translations[0].translatedText;
+    } catch (error) {
+      console.error("Error translating text:", error);
+      return "";
+    }
+  };
 
   const handleCopyResultClick = () => {
     navigator.clipboard.writeText(result).then(
@@ -21,63 +95,28 @@ const Translate = () => {
     );
   };
 
-  const translateText = async (text) => {
-    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-
-    try {
-      const response = await axios.post(url, {
-        q: text,
-        target: "zh-CN",
-        source: "en",
-      });
-      return response.data.data.translations[0].translatedText;
-    } catch (error) {
-      console.error("Error translating text:", error);
-      return "";
-    }
-  };
-
-  const translateKeys = async (obj) => {
-    const newObj = {};
-    for (const key in obj) {
-      const translatedKey = await translateText(key);
-      newObj[translatedKey] = obj[key];
+  const translateNode = async (node, inputKey, outputKey, depth = 0) => {
+    let newObj = {};
+    for (let key in node) {
+      if (typeof node[key] === "object") {
+        newObj[key] = await translateNode(node[key], inputKey, outputKey, depth + 1);
+      } else {
+        if (key === inputKey) {
+          let textToTranslate = node[key];
+          if (textToTranslate) { // Check if the text to translate is not empty
+            const translatedText = await translateText(textToTranslate);
+            newObj[outputKey] = translatedText;
+          } else {
+            newObj[key] = node[key]; // If the text to translate is empty, just copy it as it is
+          }
+        } else {
+          newObj[key] = node[key];
+        }
+      }
     }
     return newObj;
   };
 
-  const handleTranslateClick = async () => {
-    const input = JSON.parse(inputText);
-
-    const translatedData = JSON.parse(JSON.stringify(input));
-
-    for (const category in translatedData) {
-      const translatedCategory = await translateKeys({
-        [category]: translatedData[category],
-      });
-      delete translatedData[category];
-      const newCategoryKey = Object.keys(translatedCategory)[0];
-      translatedData[newCategoryKey] = translatedCategory[newCategoryKey];
-
-      for (const subcategory in translatedData[newCategoryKey]) {
-        const items = translatedData[newCategoryKey][subcategory];
-        const translatedSubcategory = await translateKeys({
-          [subcategory]: items,
-        });
-        delete translatedData[newCategoryKey][subcategory];
-        const newSubcategoryKey = Object.keys(translatedSubcategory)[0];
-        translatedData[newCategoryKey][newSubcategoryKey] =
-          translatedSubcategory[newSubcategoryKey];
-
-        for (const item of translatedData[newCategoryKey][newSubcategoryKey]) {
-          const translatedText = await translateText(item.displayName);
-          item.langName = translatedText;
-        }
-      }
-    }
-
-    setResult(JSON.stringify(translatedData, null, 2));
-  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -107,45 +146,77 @@ const Translate = () => {
             <a href="https://docs.easyuseai.com/platform/translate/google_fanyi.html">
               接口申请教程
             </a>
+            。已经申请好了，可以直接查看
+            <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">
+              当前 API
+            </a>
             。
           </Typography.Paragraph>
 
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
-              <Input
-                placeholder="请输入 Goole API Key"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                style={{ width: "100%", marginBottom: "16px" }}
-              />
-              <Input.TextArea
-                placeholder="请输入要翻译的文本"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                rows={10}
-                style={{ width: "100%", marginBottom: "16px" }}
-              />
+              <Card title="输入">
+                <Form>
+                  <LabeledInput
+                    label="API Key"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                  />
+                  <LabeledSelect
+                    label="源语言"
+                    value={sourceLanguage}
+                    onChange={setSourceLanguage}
+                    options={languages}
+                  />
+                  <LabeledSelect
+                    label="目标语言"
+                    value={targetLanguage}
+                    onChange={setTargetLanguage}
+                    options={languages}
+                  />
+                  <LabeledInput
+                    label="输入键名"
+                    value={inputKey}
+                    onChange={(e) => setInputKey(e.target.value)}
+                  />
+                  <LabeledInput
+                    label="输出键名"
+                    value={outputKey}
+                    onChange={(e) => setOutputKey(e.target.value)}
+                  />
+                  <Form.Item label="要翻译的文本">
+                    <TextArea
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      rows={10}
+                    />
+                  </Form.Item>
+                </Form>
+              </Card>
             </Col>
             <Col xs={24} md={12}>
-              <Button
-                onClick={handleTranslateClick}
-                style={{ marginBottom: "16px" }}
-              >
-                翻译文本
-              </Button>
-              <Button
-                onClick={handleCopyResultClick}
-                style={{ marginLeft: "16px", marginBottom: "16px" }}
-              >
-                复制结果
-              </Button>
-              <Input.TextArea
-                placeholder="翻译结果"
-                value={result}
-                readOnly
-                rows={10}
-                style={{ width: "100%" }}
-              />
+              <Card title="输出">
+                <Button
+                  onClick={handleTranslateClick}
+                  style={{ marginBottom: "16px" }}
+                >
+                  翻译文本
+                </Button>
+                <Button
+                  onClick={handleCopyResultClick}
+                  style={{ marginLeft: "16px", marginBottom: "16px" }}
+                >
+                  复制结果
+                </Button>
+                <Spin spinning={isLoading}>
+                  <TextArea
+                    placeholder="翻译结果"
+                    value={result}
+                    readOnly
+                    rows={10}
+                  />
+                </Spin>
+              </Card>
             </Col>
           </Row>
         </Layout.Content>
