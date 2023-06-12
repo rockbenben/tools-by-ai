@@ -17,7 +17,7 @@ import { Helmet } from "react-helmet";
 import NavBar from "./NavBar";
 import Translate from "./components/jsonTranslate";
 import TextSplitter from "./components/TextSplitter";
-import SubtitleTranslator from './components/SubtitleTranslator';
+import SubtitleTranslator from "./components/SubtitleTranslator";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -126,28 +126,36 @@ class RegexMatcher extends React.Component {
     this.setState({ result });
     message.success(`处理成功，共处理了${Object.keys(json).length}个条目。`);
   };
+
   processRule3 = () => {
     const { inputText, node1, insertNode } = this.state;
-    const json = JSON.parse(inputText);
-
-    let result = "";
-    let counter = 1;
+    let json = JSON.parse(inputText);
+    const insertNodes = insertNode.split(/[，,]/); // Split by Chinese and English comma
 
     const processNode = (obj) => {
-      if (typeof obj === "object") {
-        for (const key in obj) {
+      if (Array.isArray(obj)) {
+        return obj.map((item) => processNode(item));
+      } else if (typeof obj === "object" && obj !== null) {
+        let entries = Object.entries(obj);
+        for (let i = 0; i < entries.length; i++) {
+          let [key, value] = entries[i];
           if (key === node1) {
-            obj[insertNode] = counter;
-            //counter++;//不取消的话，则不断叠加
+            // Insert multiple keys after the found key
+            for (let j = insertNodes.length - 1; j >= 0; j--) {
+              entries.splice(i + 1, 0, [insertNodes[j], ""]);
+            }
           }
-          processNode(obj[key]);
+          entries[i][1] = processNode(value); // Recurse into the value
         }
+        return Object.fromEntries(entries); // Convert back to an object
+      } else {
+        return obj; // Not an object or array, return the value as is
       }
     };
 
-    processNode(json);
+    json = processNode(json);
 
-    result = JSON.stringify(json, null, 2);
+    const result = JSON.stringify(json, null, 2);
 
     this.setState({ result });
     message.success(`处理成功，共处理了${Object.keys(json).length}个条目。`);
@@ -166,7 +174,13 @@ class RegexMatcher extends React.Component {
 
       const updatedData = originalData.map((item) => {
         //对失效 prompt 进行降权
-        if (item.title && (item.title.includes("AI DAN") || item.title.includes("DAN 10.0") || item.title.includes("DAN 11.0"))) {
+        if (
+          item.title &&
+          (item.title.includes("AI DAN") ||
+            item.title.includes("DAN 10.0") ||
+            item.title.includes("DAN 11.0") ||
+            item.title.includes("无限制的 ChatGPT"))
+        ) {
           return { ...item, weight: 0 };
         }
         if (countDataMap.has(item.id.toString())) {
@@ -209,7 +223,7 @@ class RegexMatcher extends React.Component {
         : this.state.currentRule === 2
         ? "请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会根据 JSON 数据中的 '节点 1' 和 '节点 2' 字段进行相应的文本操作。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。"
         : this.state.currentRule === 3
-        ? "请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会在 JSON 数据中查找数组类型的节点，并在拥有指定节点的每个数组元素内插入新的序号节点。插入成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。"
+        ? "请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会在 JSON 数据中查找数组类型的节点，并在指定节点后插入新的指定节点（支持多个）。插入成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。"
         : "请在输入框中输入原始 JSON 数据和计数 JSON 数据，然后点击“匹配”按钮。工具会根据计数数据中的 'card_id' 与原始数据中的 'id' 匹配，并更新原始数据中的 'weight' 值。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。";
     return (
       <Layout style={{ minHeight: "100vh" }}>
@@ -272,7 +286,7 @@ class RegexMatcher extends React.Component {
                   />
                   <Input
                     name="insertNode"
-                    placeholder="请输入要插入的新节点名称"
+                    placeholder="请输入要插入的新节点名称，可以输入多个节点，用逗号分隔。"
                     value={this.state.insertNode}
                     onChange={this.handleInputChange}
                     style={{ width: "100%", marginBottom: "16px" }}
