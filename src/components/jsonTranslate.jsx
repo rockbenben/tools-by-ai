@@ -44,8 +44,8 @@ const Translate = () => {
   const [result, setResult] = useState("");
   const [inputText, setInputText] = useState("");
   const [apiKey, setApiKey] = useState("");
-  const [inputKey, setInputKey] = useState("displayName");
-  const [outputKey, setOutputKey] = useState("langName");
+  const [inputKey, setInputKey] = useState("");
+  const [outputKey, setOutputKey] = useState("");
   const [sourceLanguage, setSourceLanguage] = useState("en");
   const [targetLanguage, setTargetLanguage] = useState("zh-CN");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,30 +63,13 @@ const Translate = () => {
   const translateText = async (text) => {
     const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
 
-    try {
-      const response = await axios.post(url, {
-        q: text,
-        target: targetLanguage,
-        source: sourceLanguage,
-      });
-      return response.data.data.translations[0].translatedText;
-    } catch (error) {
-      // Handle API error
-      console.error("Error translating text:", error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        throw new Error(
-          `API 错误：${error.response.data.error.code} ${error.response.data.error.message}`
-        );
-      } else if (error.request) {
-        // The request was made but no response was received
-        throw new Error("API 错误：没有收到服务器响应。");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        throw new Error("API 错误：请求设置出错。");
-      }
-    }
+    // Just throw the error and let the caller handle it
+    const response = await axios.post(url, {
+      q: text,
+      target: targetLanguage,
+      source: sourceLanguage,
+    });
+    return response.data.data.translations[0].translatedText;
   };
 
   const handleCopyResultClick = () => {
@@ -100,34 +83,31 @@ const Translate = () => {
     );
   };
 
-  const translateNode = async (node, inputKey, outputKey, depth = 0) => {
-    let newObj = {};
-
-    for (let key in node) {
-      if (typeof node[key] === "object") {
-        newObj[key] = await translateNode(
-          node[key],
-          inputKey,
-          outputKey,
-          depth + 1
-        );
-      } else {
-        if (key === inputKey) {
+  const translateNode = async (node, inputKey, outputKey) => {
+    if (Array.isArray(node)) {
+      let newArray = [];
+      for (let i = 0; i < node.length; i++) {
+        newArray[i] = await translateNode(node[i], inputKey, outputKey);
+      }
+      return newArray;
+    } else if (typeof node === "object" && node !== null) {
+      let newObj = { ...node }; // Copy the original object first
+      for (let key in node) {
+        if (key === inputKey && newObj.hasOwnProperty(outputKey)) {
           let textToTranslate = node[key];
           if (textToTranslate) {
             // Check if the text to translate is not empty
             const translatedText = await translateText(textToTranslate);
             newObj[outputKey] = translatedText;
-          } else {
-            newObj[key] = node[key]; // If the text to translate is empty, just copy it as it is
           }
-        } else {
-          newObj[key] = node[key];
+        } else if (typeof node[key] === "object" && node[key] !== null) {
+          newObj[key] = await translateNode(node[key], inputKey, outputKey);
         }
       }
+      return newObj;
+    } else {
+      return node;
     }
-
-    return newObj;
   };
 
   const handleTranslateClick = async () => {
@@ -135,16 +115,17 @@ const Translate = () => {
       message.error("API Key 不能为空。");
       return;
     }
+    if (!inputText.trim()) {
+      message.error("要翻译的文本不能为空。");
+      return;
+    }
+
     if (!inputKey.trim()) {
       message.error("输入节点名不能为空。");
       return;
     }
     if (!outputKey.trim()) {
       message.error("输出节点名不能为空。");
-      return;
-    }
-    if (!inputText.trim()) {
-      message.error("要翻译的文本不能为空。");
       return;
     }
 
@@ -188,16 +169,26 @@ const Translate = () => {
       const translatedData = await translateNode(input, inputKey, outputKey);
       setResult(JSON.stringify(translatedData, null, 2));
     } catch (error) {
-      // Handle errors from translateNode and JSON parse error
-      if (error instanceof SyntaxError) {
+      // Handle all errors here
+      if (axios.isAxiosError(error)) {
+        // The error is from an axios request
+        if (error.response) {
+          message.error(
+            `API 错误：${error.response.data.error.code} ${error.response.data.error.message}`
+          );
+        } else if (error.request) {
+          message.error("API 错误：没有收到服务器响应。");
+        } else {
+          message.error("API 错误：请求设置出错。");
+        }
+      } else if (error instanceof SyntaxError) {
+        // The error is a JSON parsing error
         message.error("JSON 格式错误，请检查您的输入。");
       } else {
         // Handle other possible errors
         message.error(error.message);
-        setIsLoading(false);
-        return;
       }
-    } finally {
+
       setIsLoading(false);
     }
   };
@@ -310,51 +301,3 @@ const Translate = () => {
 };
 
 export default Translate;
-/* 
-下面是节点的测试数据，以上将 "Post-processing"、"Post-processing" 类似的位置都做了翻译，并替代原本的位置。
-{
-  "Post-processing": {
-    "Reflection": [{
-        "displayName": "Ray Tracing Reflections",
-        "langName": "中"
-      },
-      {
-        "displayName": "Lumen Reflections",
-        "langName": "中 2"
-      },
-      {
-        "displayName": "Screen Space Reflections",
-        "langName": "中 3"
-      },
-      {
-        "displayName": "Diffraction Grading",
-        "langName": "中 4"
-      }
-    ],
-    "Filters": [{
-        "displayName": "Chromatic Aberration",
-        "langName": "中 5"
-      }
-    ],
-    "Shaders": [{
-        "displayName": "Ray Traced",
-        "langName": "中 6"
-      },
-      {
-        "displayName": "Ray Tracing Ambient Occlusion",
-        "langName": "中 7"
-      }
-    ]
-  },
-  "Advanced": {
-    "Compound Details": [{
-        "displayName": "in a symbolic and meaningful style",
-        "langName": "中 8"
-      },
-      {
-        "displayName": "detailed and intricate",
-        "langName": "中 9"
-      }
-    ]
-  }
-} */
