@@ -20,26 +20,6 @@ const { Title } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
-// Component for label and input box
-const LabeledInput = ({ label, value, onChange }) => (
-  <Form.Item label={label}>
-    <Input value={value} onChange={onChange} />
-  </Form.Item>
-);
-
-// Component for label and select box
-const LabeledSelect = ({ label, value, onChange, options }) => (
-  <Form.Item label={label}>
-    <Select value={value} onChange={onChange}>
-      {options.map((option) => (
-        <Option key={option.value} value={option.value}>
-          {option.label}
-        </Option>
-      ))}
-    </Select>
-  </Form.Item>
-);
-
 const Translate = () => {
   const [result, setResult] = useState("");
   const [inputText, setInputText] = useState("");
@@ -188,7 +168,8 @@ const Translate = () => {
         // Handle other possible errors
         message.error(error.message);
       }
-
+    } finally {
+      // Regardless of whether an error occurred, stop showing the loading indicator.
       setIsLoading(false);
     }
   };
@@ -232,33 +213,42 @@ const Translate = () => {
             <Col xs={24} md={12}>
               <Card title="输入">
                 <Form>
-                  <LabeledInput
-                    label="API Key"
-                    value={apiKey}
-                    onChange={(e) => setApiKey(e.target.value)}
-                  />
-                  <LabeledSelect
-                    label="源语言"
-                    value={sourceLanguage}
-                    onChange={setSourceLanguage}
-                    options={languages}
-                  />
-                  <LabeledSelect
-                    label="目标语言"
-                    value={targetLanguage}
-                    onChange={setTargetLanguage}
-                    options={languages}
-                  />
-                  <LabeledInput
-                    label="输入键名"
-                    value={inputKey}
-                    onChange={(e) => setInputKey(e.target.value)}
-                  />
-                  <LabeledInput
-                    label="输出键名"
-                    value={outputKey}
-                    onChange={(e) => setOutputKey(e.target.value)}
-                  />
+                  <Form.Item label="API Key">
+                    <Input
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                    />
+                  </Form.Item>
+                  <Form.Item label="源语言">
+                    <Select value={sourceLanguage} onChange={setSourceLanguage}>
+                      {languages.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item label="目标语言">
+                    <Select value={targetLanguage} onChange={setTargetLanguage}>
+                      {languages.map((option) => (
+                        <Option key={option.value} value={option.value}>
+                          {option.label}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item label="输入键名">
+                    <Input
+                      value={inputKey}
+                      onChange={(e) => setInputKey(e.target.value)}
+                    />
+                  </Form.Item>
+                  <Form.Item label="输出键名">
+                    <Input
+                      value={outputKey}
+                      onChange={(e) => setOutputKey(e.target.value)}
+                    />
+                  </Form.Item>
                   <Form.Item label="要翻译的文本">
                     <TextArea
                       value={inputText}

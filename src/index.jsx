@@ -128,6 +128,7 @@ class RegexMatcher extends React.Component {
   };
 
   processRule3 = () => {
+    //title_ja,prompt_ja,desc_ja,remark_ja,title_ko,prompt_ko,desc_ko,remark_ko
     const { inputText, node1, insertNode } = this.state;
     let json = JSON.parse(inputText);
     const insertNodes = insertNode.split(/[，,]/); // Split by Chinese and English comma
@@ -179,7 +180,8 @@ class RegexMatcher extends React.Component {
           (item.title.includes("AI DAN") ||
             item.title.includes("DAN 10.0") ||
             item.title.includes("DAN 11.0") ||
-            item.title.includes("无限制的 ChatGPT"))
+            item.title.includes("无限制的 ChatGPT") ||
+            item.title.includes("失效"))
         ) {
           return { ...item, weight: 0 };
         }
@@ -279,7 +281,7 @@ class RegexMatcher extends React.Component {
                 <>
                   <Input
                     name="node1"
-                    placeholder="请输入要匹配的节点名称"
+                    placeholder="请输入要插入位置的节点名称"
                     value={this.state.node1}
                     onChange={this.handleInputChange}
                     style={{ width: "100%", marginBottom: "16px" }}
