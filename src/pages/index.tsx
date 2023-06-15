@@ -4,6 +4,7 @@ import RegexMatcher from './components/RegexMatcher';
 import JsonTextProcessor from './components/JsonTextProcessor';
 import JsonArrayInserter from './components/JsonArrayInserter';
 import JsonWeightUpdater from './components/JsonWeightUpdater';
+import JsonEdit from './components/JsonEdit';
 
 const { Title } = Typography;
 const TextProcessingTool = () => {
@@ -13,6 +14,8 @@ const TextProcessingTool = () => {
     switch (selectedTool) {
       case 'regex':
         return <RegexMatcher />;
+        case 'jsonEdit':
+          return <JsonEdit />;
       case 'textProcessor':
         return <JsonTextProcessor />;
       case 'arrayInserter':
@@ -38,6 +41,7 @@ const TextProcessingTool = () => {
       </Title>
       <Radio.Group onChange={onChange} value={selectedTool} style={{ marginBottom: "16px" }}>
         <Radio value='regex'>正则匹配工具</Radio>
+        <Radio value='jsonEdit'>Json Edit</Radio>
         <Radio value='textProcessor'>文本处理工具</Radio>
         <Radio value='arrayInserter'>数组插入工具</Radio>
         <Radio value='weightUpdater'>权重更新工具</Radio>
