@@ -5,7 +5,7 @@ import {
   ThunderboltOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Row, Col } from "antd";
+import { Menu, Row, Col } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { AppProps } from "next/app";
@@ -25,7 +25,7 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
         <Col xs={20} sm={18} md={16}>
           <Menu mode="horizontal" selectedKeys={[current]} onClick={onClick}>
             <Menu.Item key="/">
-              <Link href="/">正则匹配工具</Link>
+              <Link href="/">批量文本处理</Link>
             </Menu.Item>
             <Menu.Item key="/json-translate">
               <Link href="/json-translate">i18n JSON 翻译</Link>

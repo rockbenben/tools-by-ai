@@ -19,7 +19,6 @@ const TextSplitter = () => {
   };
 
   const splitText = () => {
-
     // Remove line breaks and then split the text
     const singleLineText = inputText.replace(/[\r\n]+/g, " ");
     const splittedTexts = [];
@@ -65,79 +64,82 @@ const TextSplitter = () => {
   };
 
   return (
-      <Layout.Content style={{ padding: "24px" }}>
-        <Row justify="center">
-          <Col xs={24} sm={24} md={20} lg={18} xl={16} xxl={14}>
-            <Title level={3}>文本分割器</Title>
-            <Paragraph>
-              本工具可以帮助您将较长的文本分割成若干段，每段长度根据您设置的字符限制进行分割。方便您在需要遵循字符限制的场景中使用。
-              <br />
-              特别是对于 ChatGPT 的长度限制场景，2000 字符的限制尤为适用。
-            </Paragraph>
-            <TextArea
-              name="inputText"
-              placeholder="请输入文本"
-              value={inputText}
-              onChange={handleInputChange}
-              rows={10}
-              style={{ width: "100%", marginBottom: "16px" }}
-            />
-            <Row gutter={16} align="middle">
-              <Col>
-                <span>分割字符数：</span>
-                <Input
-                  type="number"
-                  value={limit}
-                  onChange={handleLimitChange}
-                  min={1}
-                  max={10000}
-                  defaultValue={2000}
-                  style={{ width: "auto" }}
-                />
-              </Col>
-              <Col>
-                <Button onClick={splitText} type="primary" ghost>
-                  分割文本
-                </Button>
-              </Col>
-            </Row>
-            <div>
-              {splittedTexts.map((text, index) => (
-                <div
-                  key={index}
+    <Layout.Content style={{ padding: "24px" }}>
+      <Row justify="center">
+        <Col xs={24} sm={24} md={20} lg={18} xl={16} xxl={14}>
+          <Title level={3}>文本分割器</Title>
+          <Typography.Paragraph
+            type="secondary"
+            style={{ fontSize: "14px", marginBottom: "20px" }}
+          >
+            本工具可以帮助您将较长的文本分割成若干段，每段长度根据您设置的字符限制进行分割。方便您在需要遵循字符限制的场景中使用。
+            <br />
+            特别是对于 ChatGPT 的长度限制场景，2000 字符的限制尤为适用。
+          </Typography.Paragraph>
+          <TextArea
+            name="inputText"
+            placeholder="请输入文本"
+            value={inputText}
+            onChange={handleInputChange}
+            rows={10}
+            style={{ width: "100%", marginBottom: "16px" }}
+          />
+          <Row gutter={16} align="middle">
+            <Col>
+              <span>分割字符数：</span>
+              <Input
+                type="number"
+                value={limit}
+                onChange={handleLimitChange}
+                min={1}
+                max={10000}
+                defaultValue={2000}
+                style={{ width: "auto" }}
+              />
+            </Col>
+            <Col>
+              <Button onClick={splitText} type="primary" ghost>
+                分割文本
+              </Button>
+            </Col>
+          </Row>
+          <div>
+            {splittedTexts.map((text, index) => (
+              <div
+                key={index}
+                style={{
+                  marginTop: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <TextArea
+                  readOnly
+                  value={text}
+                  rows={4}
                   style={{
-                    marginTop: "16px",
-                    display: "flex",
-                    alignItems: "center",
+                    width: "100%",
+                    marginRight: "8px",
+                    marginBottom: "8px",
+                  }}
+                />
+                <Button
+                  onClick={() => copyToClipboard(text, index)}
+                  style={{
+                    marginBottom: "16px",
+                    backgroundColor: copiedIndexes.has(index)
+                      ? "lightgreen"
+                      : undefined,
                   }}
                 >
-                  <TextArea
-                    readOnly
-                    value={text}
-                    rows={4}
-                    style={{
-                      width: "100%",
-                      marginRight: "8px",
-                      marginBottom: "8px",
-                    }}
-                  />
-                  <Button
-                    onClick={() => copyToClipboard(text, index)}
-                    style={{
-                      marginBottom: "16px",
-                      backgroundColor: copiedIndexes.has(index)
-                        ? "lightgreen"
-                        : undefined,
-                    }}
-                  >
-                    复制
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </Col>
-        </Row>
-      </Layout.Content>
+                  复制
+                </Button>
+              </div>
+            ))}
+          </div>
+        </Col>
+      </Row>
+    </Layout.Content>
   );
 };
 export default TextSplitter;
