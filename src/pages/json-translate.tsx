@@ -69,6 +69,9 @@ const JsonTranslate = () => {
     }
 
     const translations = keyMappings.map(async (mapping) => {
+      if (!mapping.inputKey || !mapping.outputKey) {
+        return;
+      }
       const inputNodes = JSONPath.nodes(jsonObject, `$..${mapping.inputKey}`);
       const outputNodes = JSONPath.nodes(jsonObject, `$..${mapping.outputKey}`);
 
