@@ -6,11 +6,35 @@
 
 工具链接：<https://tools.newzone.top>
 
-## 批量文本处理器
+## 生成命令
 
-批量文本处理器除了支持正则匹配和 JSON 节点提取，还可以在多条件匹配时使用条件语句执行不同的文本处理操作。例如，匹配 `<h4>` 和 `</h4> ` 之间的文本执行文本处理操作 1，匹配 `<h5>` 和 `</h5>` 之间的文本执行文本处理操作 2，如果都没有匹配到则直接输出文本。批量文本处理器适合从大量数据中提取文本，并按照特定规则进行处理和输出。
+v1:
 
-## i18n 翻译器
+```txt
+Please act as a Senior Frontend developer and create a a project using Create Next App, yarn, Ant Design, axios. In this project, implement a feature that displays Chinese text on the screen. Apply styling using Ant Design. Please provide all relevant code snippets for each task and explain how they work. Your first task is [项目要求]
+```
+
+v2:
+
+```txt
+Please assist me in building a frontend project with specific technologies and features. Your expertise as a Senior Frontend Developer will be appreciated. Here are the detailed tasks:
+
+1. Setup a new project using Create Next App, yarn, Ant Design, axios.
+
+2. Implement a feature that displays Chinese text on the screen. Apply styling using Ant Design.
+
+3. The entire conversation and instructions should be provided in Chinese.
+
+Please provide all relevant code snippets for each task and explain how they work. Your first task is [项目要求]
+```
+
+## 工具说明
+
+### 批量文本处理器
+
+批量文本处理器除了支持正则匹配和 JSON 节点提取，还可以在多条件匹配时使用条件语句执行不同的文本处理操作。例如，匹配 `<h4>` 和 `</h4>` 之间的文本执行文本处理操作 1，匹配 `<h5>` 和 `</h5>` 之间的文本执行文本处理操作 2，如果都没有匹配到则直接输出文本。批量文本处理器适合从大量数据中提取文本，并按照特定规则进行处理和输出。
+
+### i18n 翻译器
 
 本工具适用于 i18n 文件翻译或 JSON 等规则文本翻译，同时支持规则文本的批量处理。默认使用 Google Translate API。
 
@@ -32,6 +56,9 @@ npm run dev
 yarn dev
 # or
 pnpm dev
+
+# build and start
+yarn build && yarn start
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
