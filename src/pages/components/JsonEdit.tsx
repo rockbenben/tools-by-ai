@@ -1,32 +1,33 @@
 import React, { useState } from "react";
-import {
-  Layout,
-  Row,
-  Col,
-  Button,
-  Form,
-  Typography,
-  Input,
-  message,
-  Card,
-} from "antd";
+import { Row, Col, Button, Form, Input, message, Card } from "antd";
 import JSONPath from "jsonpath";
-import KeyMappingInput from "./KeyMappingInput";
-const { Title } = Typography;
 
 const JsonEdit = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
   const [jsonOutput, setJsonOutput] = useState<any>({});
   const [prefix, setPrefix] = useState<string>("");
   const [suffix, setSuffix] = useState<string>("");
-  const [keyMappings, setKeyMappings] = useState<
-    Array<{ inputKey: string; outputKey: string }>
-  >([{ inputKey: "", outputKey: "" }]);
+  const [insertText, setInsertText] = useState<string>("");
+  const [findText, setFindText] = useState<string>("");
+  const [replaceText, setReplaceText] = useState<string>("");
+
+  const [jsonPath, setJsonPath] = useState<string>("");
 
   const applyPrefixSuffix = (value) => {
     let newValue = value;
+    if (findText) newValue = newValue.replaceAll(findText, replaceText);
     if (prefix) newValue = prefix + newValue;
     if (suffix) newValue = newValue + suffix;
+
+    // Insert the text into the penultimate sentence
+    if (insertText) {
+      let sentences = newValue.split(". ");
+      if (sentences.length > 1) {
+        sentences.splice(sentences.length - 1, 0, insertText);
+        newValue = sentences.join(". ");
+      }
+    }
+
     return newValue;
   };
 
@@ -44,35 +45,26 @@ const JsonEdit = () => {
       return;
     }
 
-    const transformations = keyMappings.map((mapping) => {
-      if (!mapping.inputKey || !mapping.outputKey) {
-        return;
-      }
-      const inputNodes = JSONPath.nodes(jsonObject, `$..${mapping.inputKey}`);
-      const outputNodes = JSONPath.nodes(jsonObject, `$..${mapping.outputKey}`);
+    const paths = jsonPath.split(/,|，/);
 
-      if (inputNodes.length === 0) {
-        message.error(`输入键 ${mapping.inputKey} 在 JSON 中找不到`);
-        return;
-      }
-      if (outputNodes.length === 0) {
-        message.error(`输出键 ${mapping.outputKey} 在 JSON 中找不到`);
+    paths.forEach((path) => {
+      if (!path) return;
+
+      const nodes = JSONPath.nodes(jsonObject, `$..${path}`);
+
+      if (nodes.length === 0) {
+        message.error(`在 JSON 中找不到路径 ${path}`);
         return;
       }
 
-      inputNodes.forEach((node, index) => {
-        JSONPath.apply(
-          jsonObject,
-          JSONPath.stringify(outputNodes[index].path),
-          () => applyPrefixSuffix(node.value)
+      nodes.forEach((node) => {
+        JSONPath.apply(jsonObject, JSONPath.stringify(node.path), () =>
+          applyPrefixSuffix(node.value)
         );
       });
     });
 
-    // 等待所有的键映射完成
-    Promise.all(transformations).then(() => {
-      setJsonOutput(JSON.stringify(jsonObject, null, 2));
-    });
+    setJsonOutput(JSON.stringify(jsonObject, null, 2));
   };
 
   const handleCopyResult = () => {
@@ -88,20 +80,16 @@ const JsonEdit = () => {
 
   return (
     <>
-      <Typography.Paragraph
-        type="secondary"
-        style={{ fontSize: "14px", marginBottom: "20px" }}
-      >
-        将输入 JSON
-        中的输出节点的值设为输入节点的值。此外，你可以为所有输出键添加前缀或后缀。
-      </Typography.Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title="输入区">
-            <KeyMappingInput
-              keyMappings={keyMappings}
-              setKeyMappings={setKeyMappings}
-            />
+            <Form.Item label="JSONPath">
+              <Input
+                value={jsonPath}
+                onChange={(e) => setJsonPath(e.target.value)}
+                placeholder="Enter the JSONPaths, separated by commas"
+              />
+            </Form.Item>
 
             <Form.Item label="Prefix">
               <Input
@@ -110,11 +98,33 @@ const JsonEdit = () => {
                 placeholder="Enter a prefix to add to all output keys"
               />
             </Form.Item>
+            <Form.Item label="Insert Text">
+              <Input
+                value={insertText}
+                onChange={(e) => setInsertText(e.target.value)}
+                placeholder="Enter a text to insert into output value"
+              />
+            </Form.Item>
+
             <Form.Item label="Suffix">
               <Input
                 value={suffix}
                 onChange={(e) => setSuffix(e.target.value)}
                 placeholder="Enter a suffix to add to all output keys"
+              />
+            </Form.Item>
+            <Form.Item label="Find Text">
+              <Input
+                value={findText}
+                onChange={(e) => setFindText(e.target.value)}
+                placeholder="Enter a text to find in the JSON node"
+              />
+            </Form.Item>
+            <Form.Item label="Replace Text">
+              <Input
+                value={replaceText}
+                onChange={(e) => setReplaceText(e.target.value)}
+                placeholder="Enter a text to replace the found text"
               />
             </Form.Item>
             <Form.Item>
