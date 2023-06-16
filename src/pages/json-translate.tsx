@@ -21,11 +21,19 @@ const JsonTranslate = () => {
   const [apiKey, setApiKey] = useState<string>("");
   const [jsonInput, setJsonInput] = useState<string>("");
   const [jsonOutput, setJsonOutput] = useState<any>({});
+  const [translationMethod, setTranslationMethod] = useState<string>("google");
   const [sourceLanguage, setSourceLanguage] = useState<string>("en");
-  const [targetLanguage, setTargetLanguage] = useState<string>("zh-CN");
+  const [targetLanguage, setTargetLanguage] = useState<string>("zh");
   const [keyMappings, setKeyMappings] = useState<
     Array<{ inputKey: string; outputKey: string }>
   >([{ inputKey: "", outputKey: "" }]);
+
+  const { Option } = Select;
+
+  const translationMethods = [
+    { value: "google", label: "Google Translate" },
+    { value: "deepl", label: "DeepL" },
+  ];
 
   type LanguageOption = {
     value: string;
@@ -34,21 +42,40 @@ const JsonTranslate = () => {
 
   const languages: LanguageOption[] = [
     { value: "en", label: "English" },
-    { value: "zh-CN", label: "中文" },
+    { value: "zh", label: "中文" },
     { value: "ja", label: "日语" },
     { value: "ko", label: "韩语" },
     { value: "es", label: "西班牙语" },
   ];
 
   const translateText = async (text: string) => {
-    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-    const response = await axios.post(url, {
-      q: text,
-      target: targetLanguage,
-      source: sourceLanguage,
-    });
+    if (translationMethod === "google") {
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+      const response = await axios.post(url, {
+        q: text,
+        target: targetLanguage,
+        source: sourceLanguage,
+      });
 
-    return response.data.data.translations[0].translatedText;
+      return response.data.data.translations[0].translatedText;
+    } else if (translationMethod === "deepl") {
+      const response = await axios.post(
+        "/api/deeplTranslate",
+        {
+          text: text,
+          target_lang: targetLanguage,
+          source_lang: sourceLanguage,
+          authKey: apiKey,
+        },
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      return response.data.translations[0].text;
+    }
   };
 
   const handleTranslate = async () => {
@@ -142,9 +169,16 @@ const JsonTranslate = () => {
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title="输入区">
+            <Form.Item label="Translation Method">
+              <Select
+                value={translationMethod}
+                onChange={(value) => setTranslationMethod(value)}
+                options={translationMethods}
+              />
+            </Form.Item>
             <Form.Item>
               <Input
-                placeholder="Google Translate API Key"
+                placeholder="Google/DeepL Translate API Key"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
               />
