@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Form, Input, message, Card } from "antd";
+import { Row, Col, Button, Form, Input, message, Card, Space } from "antd";
 import JSONPath from "jsonpath";
 
 const JsonEdit = () => {
@@ -113,20 +113,25 @@ const JsonEdit = () => {
                 placeholder="Enter a suffix to add to all output keys"
               />
             </Form.Item>
-            <Form.Item label="Find Text">
-              <Input
-                value={findText}
-                onChange={(e) => setFindText(e.target.value)}
-                placeholder="Enter a text to find in the JSON node"
-              />
-            </Form.Item>
-            <Form.Item label="Replace Text">
-              <Input
-                value={replaceText}
-                onChange={(e) => setReplaceText(e.target.value)}
-                placeholder="Enter a text to replace the found text"
-              />
-            </Form.Item>
+            <Space
+              style={{ display: "flex", marginBottom: 8 }}
+              align="baseline"
+            >
+              <Form.Item label="Find Text">
+                <Input
+                  value={findText}
+                  onChange={(e) => setFindText(e.target.value)}
+                  placeholder="Find in the JSON node"
+                />
+              </Form.Item>
+              <Form.Item label="Replace Text">
+                <Input
+                  value={replaceText}
+                  onChange={(e) => setReplaceText(e.target.value)}
+                  placeholder="Replace the found text"
+                />
+              </Form.Item>
+            </Space>
             <Form.Item>
               <Input.TextArea
                 placeholder="JSON Input"

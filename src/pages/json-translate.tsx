@@ -10,6 +10,7 @@ import {
   Select,
   message,
   Card,
+  Space,
 } from "antd";
 import axios from "axios";
 import JSONPath from "jsonpath";
@@ -148,20 +149,24 @@ const JsonTranslate = () => {
                 onChange={(e) => setApiKey(e.target.value)}
               />
             </Form.Item>
-            <Form.Item label="Source Language">
-              <Select
-                value={sourceLanguage}
-                onChange={(value) => setSourceLanguage(value)}
-                options={languages}
-              />
-            </Form.Item>
-            <Form.Item label="Target Language">
-              <Select
-                value={targetLanguage}
-                onChange={(value) => setTargetLanguage(value)}
-                options={languages}
-              />
-            </Form.Item>
+            <Space style={{ display: "flex" }} align="baseline">
+              <Form.Item label="Source Language">
+                <Select
+                  value={sourceLanguage}
+                  onChange={(value) => setSourceLanguage(value)}
+                  options={languages}
+                />
+              </Form.Item>
+
+              <Form.Item label="Target Language">
+                <Select
+                  value={targetLanguage}
+                  onChange={(value) => setTargetLanguage(value)}
+                  options={languages}
+                />
+              </Form.Item>
+            </Space>
+
             <KeyMappingInput
               keyMappings={keyMappings}
               setKeyMappings={setKeyMappings}
