@@ -49,32 +49,37 @@ const JsonTranslate = () => {
   ];
 
   const translateText = async (text: string) => {
-    if (translationMethod === "google") {
-      const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-      const response = await axios.post(url, {
-        q: text,
-        target: targetLanguage,
-        source: sourceLanguage,
-      });
-
-      return response.data.data.translations[0].translatedText;
-    } else if (translationMethod === "deepl") {
-      const response = await axios.post(
-        "/api/deeplTranslate",
-        {
-          text: text,
-          target_lang: targetLanguage,
-          source_lang: sourceLanguage,
-          authKey: apiKey,
-        },
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+    try {
+      if (translationMethod === "google") {
+        const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
+        const response = await axios.post(url, {
+          q: text,
+          target: targetLanguage,
+          source: sourceLanguage,
+        });
+  
+        return response.data.data.translations[0].translatedText;
+      } else if (translationMethod === "deepl") {
+        const response = await axios.post(
+          "/api/deeplTranslate",
+          {
+            text: text,
+            target_lang: targetLanguage,
+            source_lang: sourceLanguage,
+            authKey: apiKey,
           },
-        }
-      );
-
-      return response.data.translations[0].text;
+          {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+  
+        return response.data.translations[0].text;
+      }
+    } catch (error) {
+      console.error(`Failed to translate text: ${error}`);
+      return null; // or some default value
     }
   };
 
@@ -153,18 +158,20 @@ const JsonTranslate = () => {
         type="secondary"
         style={{ fontSize: "14px", marginBottom: "20px" }}
       >
-        本页面旨在帮助用户处理和翻译 JSON 数据。它使用 Google Translte
+        本页面旨在帮助用户处理和翻译 JSON 数据。它使用 Google/DeepL Translte
         API，能够把用户指定的 JSON
         输入中的某些节点的值翻译成目标语言，并把翻译结果填入相应的输出节点中。用户可以自定义输入/输出节点，选择源语言和目标语言，然后通过简单的点击操作完成翻译任务。
-        如果没有 API，可查看
+        若你尚未拥有 API，可参考
         <a href="https://docs.easyuseai.com/platform/translate/google_fanyi.html">
           接口申请教程
         </a>
-        。如果你已经申请好了，可以直接查看
+        。如果已成功申请，可以直接查看{" "}
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">
-          当前 API
-        </a>
-        。
+          Google Translate API
+        </a>{" "}
+        或 <a href="https://www.deepl.com/zh/account/summary">DeepL API</a>{" "}
+        。请注意，Google Translate 会直接将数据发送到 Google，然而 DeepL API
+        并不支持网页使用。因此，我在服务器上设立了一个转发接口。服务器只负责转发你的数据，不会进行任何收集。你也可以选择在本地端进行部署使用。
       </Typography.Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
