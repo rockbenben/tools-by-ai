@@ -23,13 +23,11 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
         <Space
           key={mapping.id}
           style={{ display: "flex", marginBottom: 8 }}
-          align="baseline"
-        >
+          align='baseline'>
           <Form.Item
             name={`inputKey${mapping.id}`}
             label={`输入键名 ${index + 1}`}
-            style={{ marginBottom: 0 }}
-          >
+            style={{ marginBottom: 0 }}>
             <Input
               value={mapping.inputKey}
               onChange={(e) => {
@@ -42,8 +40,7 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
           <Form.Item
             name={`outputKey${mapping.id}`}
             label={`输出键名 ${index + 1}`}
-            style={{ marginBottom: 0 }}
-          >
+            style={{ marginBottom: 0 }}>
             <Input
               value={mapping.outputKey}
               onChange={(e) => {
@@ -53,10 +50,10 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
               }}
             />
           </Form.Item>
-          <Tooltip title="删除翻译节点">
+          <Tooltip title='删除翻译节点'>
             <Button
               onClick={() => removeMapping(mapping.id)}
-              type="default"
+              type='default'
               icon={<MinusCircleOutlined />}
             />
           </Tooltip>
@@ -65,10 +62,9 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
       <Form.Item>
         <Button
           onClick={addMapping}
-          type="dashed"
+          type='dashed'
           block
-          icon={<PlusOutlined />}
-        >
+          icon={<PlusOutlined />}>
           添加翻译节点
         </Button>
       </Form.Item>

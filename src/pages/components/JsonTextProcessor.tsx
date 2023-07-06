@@ -55,9 +55,8 @@ const JsonTextProcessor = () => {
   return (
     <>
       <Typography.Paragraph
-        type="secondary"
-        style={{ fontSize: "14px", marginBottom: "20px" }}
-      >
+        type='secondary'
+        style={{ fontSize: "14px", marginBottom: "20px" }}>
         请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会根据 JSON
         数据中的 节点 1 和 节点 2
         字段进行相应的文本操作。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。
@@ -65,7 +64,7 @@ const JsonTextProcessor = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
           <Input.TextArea
-            placeholder="输入JSON数据"
+            placeholder='输入JSON数据'
             value={jsonInput}
             rows={12}
             onChange={(e) => setJsonInput(e.target.value)}
@@ -73,37 +72,37 @@ const JsonTextProcessor = () => {
         </Col>
         <Col xs={24} md={12}>
           <Input
-            placeholder="节点1"
+            placeholder='节点1'
             value={node1}
             onChange={(e) => setNode1(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input
-            placeholder="节点2"
+            placeholder='节点2'
             value={node2}
             onChange={(e) => setNode2(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input
-            placeholder="前缀文本1"
+            placeholder='前缀文本1'
             value={prefixText1}
             onChange={(e) => setPrefixText1(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input
-            placeholder="前缀文本2"
+            placeholder='前缀文本2'
             value={prefixText2}
             onChange={(e) => setPrefixText2(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input
-            placeholder="后缀文本1"
+            placeholder='后缀文本1'
             value={suffixText1}
             onChange={(e) => setSuffixText1(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input
-            placeholder="后缀文本2"
+            placeholder='后缀文本2'
             value={suffixText2}
             onChange={(e) => setSuffixText2(e.target.value)}
             style={{ marginBottom: "10px" }}
@@ -115,7 +114,7 @@ const JsonTextProcessor = () => {
         </Col>
         <Col xs={24}>
           <Input.TextArea
-            placeholder="处理结果"
+            placeholder='处理结果'
             rows={10}
             value={result}
             readOnly

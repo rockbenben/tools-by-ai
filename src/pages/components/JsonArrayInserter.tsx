@@ -68,16 +68,15 @@ const JsonArrayInserter = () => {
   return (
     <>
       <Typography.Paragraph
-        type="secondary"
-        style={{ fontSize: "14px", marginBottom: "20px" }}
-      >
+        type='secondary'
+        style={{ fontSize: "14px", marginBottom: "20px" }}>
         请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会在 JSON
         数据中查找数组类型的节点，并在指定节点后插入新的指定节点（支持多个）。插入成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。{" "}
       </Typography.Paragraph>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
           <Input.TextArea
-            placeholder="输入JSON数据"
+            placeholder='输入JSON数据'
             value={jsonInput}
             rows={5}
             onChange={(e) => setJsonInput(e.target.value)}
@@ -85,12 +84,12 @@ const JsonArrayInserter = () => {
         </Col>
         <Col xs={24} md={12}>
           <Input
-            placeholder="输入要插入位置的节点名称"
+            placeholder='输入要插入位置的节点名称'
             value={node1}
             onChange={(e) => setNode1(e.target.value)}
           />
           <Input
-            placeholder="输入要插入的新节点名称，可以输入多个节点，用逗号分隔。"
+            placeholder='输入要插入的新节点名称，可以输入多个节点，用逗号分隔。'
             value={insertNode}
             style={{ marginTop: "10px" }}
             onChange={(e) => setInsertNode(e.target.value)}
@@ -100,14 +99,13 @@ const JsonArrayInserter = () => {
           </Button>
           <Button
             onClick={handleCopyClick}
-            style={{ marginTop: "10px", marginLeft: "10px" }}
-          >
+            style={{ marginTop: "10px", marginLeft: "10px" }}>
             复制结果
           </Button>
         </Col>
         <Col xs={24}>
           <Input.TextArea
-            placeholder="插入结果"
+            placeholder='插入结果'
             rows={10}
             value={result}
             readOnly

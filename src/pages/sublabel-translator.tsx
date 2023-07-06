@@ -228,60 +228,56 @@ const SubtitleTranslator = () => {
       <Head>
         <title>在线字幕翻译工具 | Tools by AI</title>
         <meta
-          name="description"
-          content="一个便捷的在线字幕翻译工具，支持多种语言选择和单文件或多文件翻译。只需要提供Google Translate API Key，就可以快速得到翻译结果。"
+          name='description'
+          content='一个便捷的在线字幕翻译工具，支持多种语言选择和单文件或多文件翻译。只需要提供Google Translate API Key，就可以快速得到翻译结果。'
         />
         <meta
-          name="keywords"
-          content="字幕翻译,在线翻译,多语言翻译,Google Translate,字幕文件,单文件翻译,多文件翻译"
+          name='keywords'
+          content='字幕翻译,在线翻译,多语言翻译,Google Translate,字幕文件,单文件翻译,多文件翻译'
         />
       </Head>
       <Layout.Content
-        style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}
-      >
+        style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
         <Title level={3} style={{ marginBottom: "24px" }}>
           字幕翻译
         </Title>
         <Typography.Paragraph
-          type="secondary"
-          style={{ fontSize: "14px", marginBottom: "20px" }}
-        >
+          type='secondary'
+          style={{ fontSize: "14px", marginBottom: "20px" }}>
           写完后发现本页面与
-          <a href="https://github.com/1c7/Translate-Subtitle-File">
+          <a href='https://github.com/1c7/Translate-Subtitle-File'>
             1c7/Translate-Subtitle-File
           </a>
           项目重叠了，建议直接使用该项目的
-          <a href="https://tern.1c7.me/#/">网页版</a>。
+          <a href='https://tern.1c7.me/#/'>网页版</a>。
         </Typography.Paragraph>
         <Radio.Group
           value={translationMode}
-          onChange={handleTranslationModeChange}
-        >
-          <Radio.Button value="single">单文件翻译</Radio.Button>
-          <Radio.Button value="multiple">多文件翻译</Radio.Button>
+          onChange={handleTranslationModeChange}>
+          <Radio.Button value='single'>单文件翻译</Radio.Button>
+          <Radio.Button value='multiple'>多文件翻译</Radio.Button>
         </Radio.Group>
         {translationMode === "single" && (
           <>
             <div>
               <Dragger
                 customRequest={({ file }) => handleFileUpload(file)}
-                accept=".srt"
+                accept='.srt'
                 showUploadList={false}
                 style={{
                   marginBottom: "16px",
                   padding: "16px 0",
-                }}
-              >
-                <p className="ant-upload-drag-icon">
+                }}>
+                <p className='ant-upload-drag-icon'>
                   <InboxOutlined />
                 </p>
-                <p className="ant-upload-text">
+                <p className='ant-upload-text'>
                   点击或拖拽文件到此区域以上传 .srt 字幕文件
                 </p>
               </Dragger>
             </div>
             <TextArea
-              placeholder="或在此处粘贴字幕文本（仅支持 .srt 格式）"
+              placeholder='或在此处粘贴字幕文本（仅支持 .srt 格式）'
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
               rows={10}
@@ -293,18 +289,17 @@ const SubtitleTranslator = () => {
           <div>
             <Dragger
               customRequest={({ file }) => handleMultipleFileUpload(file)}
-              accept=".srt"
+              accept='.srt'
               multiple
               showUploadList={true}
               style={{
                 marginBottom: "16px",
                 padding: "16px 0",
-              }}
-            >
-              <p className="ant-upload-drag-icon">
+              }}>
+              <p className='ant-upload-drag-icon'>
                 <InboxOutlined />
               </p>
-              <p className="ant-upload-text">
+              <p className='ant-upload-text'>
                 点击或拖拽文件到此区域以上传多个 .srt 字幕文件
               </p>
             </Dragger>
@@ -312,7 +307,7 @@ const SubtitleTranslator = () => {
         )}
         <Space>
           <Input
-            placeholder="输入 Google Translate API Key"
+            placeholder='输入 Google Translate API Key'
             value={apiKey}
             onChange={handleApiKeyChange}
           />
@@ -320,8 +315,7 @@ const SubtitleTranslator = () => {
           <Select
             value={sourceLanguage}
             onChange={handleSourceLanguageChange}
-            style={{ width: "200px" }}
-          >
+            style={{ width: "200px" }}>
             {languageOptions.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
@@ -332,8 +326,7 @@ const SubtitleTranslator = () => {
           <Select
             value={targetLanguage}
             onChange={handleTargetLanguageChange}
-            style={{ width: "200px" }}
-          >
+            style={{ width: "200px" }}>
             {languageOptions.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
@@ -341,7 +334,7 @@ const SubtitleTranslator = () => {
             ))}
           </Select>
         </Space>
-        <Divider type="vertical" />
+        <Divider type='vertical' />
         <Space>
           <Button
             onClick={
@@ -349,15 +342,13 @@ const SubtitleTranslator = () => {
                 ? handleTranslate
                 : handleMultipleTranslate
             }
-            disabled={translateInProgress}
-          >
+            disabled={translateInProgress}>
             翻译
           </Button>
           {translationMode === "single" && (
             <>
               <Button
-                onClick={() => navigator.clipboard.writeText(translatedText)}
-              >
+                onClick={() => navigator.clipboard.writeText(translatedText)}>
                 复制结果
               </Button>
               <Button onClick={handleExportSubtitle}>导出字幕文件</Button>
@@ -366,13 +357,12 @@ const SubtitleTranslator = () => {
         </Space>
         {translateInProgress && (
           <Modal
-            title="翻译中"
+            title='翻译中'
             visible={translateInProgress}
             footer={null}
-            closable={false}
-          >
+            closable={false}>
             <Progress
-              type="circle"
+              type='circle'
               format={() => `${Math.floor(runningTime)}s`}
               percent={100}
               width={80}

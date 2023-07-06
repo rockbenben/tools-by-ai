@@ -54,7 +54,7 @@ const JsonTranslate = () => {
     { value: "pt", label: "葡萄牙语" },
     { value: "hi", label: "印地语 (仅 Google)" },
     { value: "ar", label: "阿拉伯语 (仅 Google)" },
-    { value: "bn", label: "孟加拉语 (仅 Google)" }
+    { value: "bn", label: "孟加拉语 (仅 Google)" },
   ];
 
   const translateText = async (text: string) => {
@@ -161,36 +161,34 @@ const JsonTranslate = () => {
       <Head>
         <title> JSON 节点机器翻译器 - 可用于 i18n 国际化 | Tools by AI</title>
         <meta
-          name="description"
-          content="这是一个强大的JSON节点翻译工具，允许用户指定JSON输入的节点进行翻译，它可以通过Google或DeepL的翻译API将选定的节点从源语言翻译为目标语言，并将翻译的结果填入相应的输出节点。"
+          name='description'
+          content='这是一个强大的JSON节点翻译工具，允许用户指定JSON输入的节点进行翻译，它可以通过Google或DeepL的翻译API将选定的节点从源语言翻译为目标语言，并将翻译的结果填入相应的输出节点。'
         />
         <meta
-          name="keywords"
-          content="JSON, 翻译器, JSON翻译, 语言转换, 机器翻译, 自动翻译, JSON节点,Google翻译API, DeepL翻译API"
+          name='keywords'
+          content='JSON, 翻译器, JSON翻译, 语言转换, 机器翻译, 自动翻译, JSON节点,Google翻译API, DeepL翻译API'
         />
       </Head>
       <Layout.Content
-        style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}
-      >
+        style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
         <Title level={3} style={{ marginBottom: "24px" }}>
           JSON 节点机器翻译器
         </Title>
         <Typography.Paragraph
-          type="secondary"
-          style={{ fontSize: "14px", marginBottom: "20px" }}
-        >
+          type='secondary'
+          style={{ fontSize: "14px", marginBottom: "20px" }}>
           本页面旨在帮助用户处理和翻译 JSON 数据。它使用 Google/DeepL Translte
           API，能够把用户指定的 JSON
           输入中的某些节点的值翻译成目标语言，并把翻译结果填入相应的输出节点中。用户可以自定义输入/输出节点，选择源语言和目标语言，然后通过简单的点击操作完成翻译任务。
           若你尚未拥有 API，可参考
-          <a href="https://docs.easyuseai.com/platform/translate/google_fanyi.html">
+          <a href='https://docs.easyuseai.com/platform/translate/google_fanyi.html'>
             接口申请教程
           </a>
           。如果已成功申请，可以直接查看{" "}
-          <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">
+          <a href='https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814'>
             Google Translate API
           </a>{" "}
-          或 <a href="https://www.deepl.com/zh/account/summary">DeepL API</a>{" "}
+          或 <a href='https://www.deepl.com/zh/account/summary'>DeepL API</a>{" "}
           。使用建议：对于界面 UI 翻译，建议使用 Google
           Translate；而对于长句翻译，DeepL 的质量更好。请注意，Google Translate
           会直接将数据发送到 Google，然而 DeepL API
@@ -198,8 +196,8 @@ const JsonTranslate = () => {
         </Typography.Paragraph>
         <Row gutter={16}>
           <Col xs={24} lg={12}>
-            <Card title="输入区">
-              <Form.Item label="Translation Method">
+            <Card title='输入区'>
+              <Form.Item label='Translation Method'>
                 <Select
                   value={translationMethod}
                   onChange={(value) => setTranslationMethod(value)}
@@ -208,13 +206,13 @@ const JsonTranslate = () => {
               </Form.Item>
               <Form.Item>
                 <Input
-                  placeholder="Google/DeepL Translate API Key"
+                  placeholder='Google/DeepL Translate API Key'
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                 />
               </Form.Item>
-              <Space style={{ display: "flex" }} align="baseline">
-                <Form.Item label="Source Language">
+              <Space style={{ display: "flex" }} align='baseline'>
+                <Form.Item label='Source Language'>
                   <Select
                     value={sourceLanguage}
                     onChange={(value) => setSourceLanguage(value)}
@@ -222,7 +220,7 @@ const JsonTranslate = () => {
                   />
                 </Form.Item>
 
-                <Form.Item label="Target Language">
+                <Form.Item label='Target Language'>
                   <Select
                     value={targetLanguage}
                     onChange={(value) => setTargetLanguage(value)}
@@ -237,7 +235,7 @@ const JsonTranslate = () => {
               />
               <Form.Item>
                 <Input.TextArea
-                  placeholder="JSON Input"
+                  placeholder='JSON Input'
                   value={jsonInput}
                   onChange={(e) => setJsonInput(e.target.value)}
                   rows={10}
@@ -246,22 +244,20 @@ const JsonTranslate = () => {
             </Card>
           </Col>
           <Col xs={24} lg={12}>
-            <Card title="结果区">
+            <Card title='结果区'>
               <Button
                 onClick={handleTranslate}
-                style={{ marginBottom: "16px" }}
-              >
+                style={{ marginBottom: "16px" }}>
                 Translate Text
               </Button>
               <Button
                 onClick={handleCopyResult}
-                style={{ marginLeft: "16px", marginBottom: "16px" }}
-              >
+                style={{ marginLeft: "16px", marginBottom: "16px" }}>
                 Copy Result
               </Button>
               <Form.Item>
                 <Input.TextArea
-                  placeholder="JSON Output"
+                  placeholder='JSON Output'
                   value={jsonOutput}
                   rows={10}
                   readOnly

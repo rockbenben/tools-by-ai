@@ -69,39 +69,38 @@ const TextSplitter = () => {
       <Head>
         <title>文本分割工具 - AI 工具集</title>
         <meta
-          name="description"
-          content="我们的文本分割工具可以帮助你将长文本划分为满足特定字符限制的多个小段。这特别适用于需要遵守字符限制的场景，例如使用ChatGPT时的2000字符限制。"
+          name='description'
+          content='我们的文本分割工具可以帮助你将长文本划分为满足特定字符限制的多个小段。这特别适用于需要遵守字符限制的场景，例如使用ChatGPT时的2000字符限制。'
         />
         <meta
-          name="keywords"
-          content="文本分割, 文本处理, AI工具, 字符限制, ChatGPT"
+          name='keywords'
+          content='文本分割, 文本处理, AI工具, 字符限制, ChatGPT'
         />
       </Head>
       <Layout.Content style={{ padding: "24px" }}>
-        <Row justify="center">
+        <Row justify='center'>
           <Col xs={24} sm={24} md={20} lg={18} xl={16} xxl={14}>
             <Title level={3}>文本分割器</Title>
             <Typography.Paragraph
-              type="secondary"
-              style={{ fontSize: "14px", marginBottom: "20px" }}
-            >
+              type='secondary'
+              style={{ fontSize: "14px", marginBottom: "20px" }}>
               本工具可以帮助您将较长的文本分割成若干段，每段长度根据您设置的字符限制进行分割。方便您在需要遵循字符限制的场景中使用。
               <br />
               特别是对于 ChatGPT 的长度限制场景，2000 字符的限制尤为适用。
             </Typography.Paragraph>
             <TextArea
-              name="inputText"
-              placeholder="请输入文本"
+              name='inputText'
+              placeholder='请输入文本'
               value={inputText}
               onChange={handleInputChange}
               rows={10}
               style={{ width: "100%", marginBottom: "16px" }}
             />
-            <Row gutter={16} align="middle">
+            <Row gutter={16} align='middle'>
               <Col>
                 <span>分割字符数：</span>
                 <Input
-                  type="number"
+                  type='number'
                   value={limit}
                   onChange={handleLimitChange}
                   min={1}
@@ -111,7 +110,7 @@ const TextSplitter = () => {
                 />
               </Col>
               <Col>
-                <Button onClick={splitText} type="primary" ghost>
+                <Button onClick={splitText} type='primary' ghost>
                   分割文本
                 </Button>
               </Col>
@@ -124,8 +123,7 @@ const TextSplitter = () => {
                     marginTop: "16px",
                     display: "flex",
                     alignItems: "center",
-                  }}
-                >
+                  }}>
                   <TextArea
                     readOnly
                     value={text}
@@ -143,8 +141,7 @@ const TextSplitter = () => {
                       backgroundColor: copiedIndexes.has(index)
                         ? "lightgreen"
                         : undefined,
-                    }}
-                  >
+                    }}>
                     复制
                   </Button>
                 </div>

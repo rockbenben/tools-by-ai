@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Row,
-  Col,
-  Button,
-  Form,
-  Typography,
-  Input,
-  message,
-  Card,
-} from "antd";
+import { Row, Col, Button, Form, Typography, Input, message, Card } from "antd";
 import JSONPath from "jsonpath";
 import KeyMappingInput from "./KeyMappingInput";
 
@@ -78,22 +69,21 @@ const JsonValueTransformer = () => {
 
   return (
     <>
-      <Typography.Paragraph
-        type="secondary"
-        style={{ fontSize: "14px" }}
-      >
-        通过键映射（key mapping）来修改 JSON 数据。用户可以输入一对键（输入键和输出键），该工具会查找 JSON 数据中的输入键位置，然后将对应位置的值替换为输出键位置的值。
+      <Typography.Paragraph type='secondary' style={{ fontSize: "14px" }}>
+        通过键映射（key mapping）来修改 JSON
+        数据。用户可以输入一对键（输入键和输出键），该工具会查找 JSON
+        数据中的输入键位置，然后将对应位置的值替换为输出键位置的值。
       </Typography.Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
-          <Card title="输入区">
+          <Card title='输入区'>
             <KeyMappingInput
               keyMappings={keyMappings}
               setKeyMappings={setKeyMappings}
             />
             <Form.Item>
               <Input.TextArea
-                placeholder="JSON Input"
+                placeholder='JSON Input'
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 rows={10}
@@ -102,19 +92,18 @@ const JsonValueTransformer = () => {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="结果区">
+          <Card title='结果区'>
             <Button onClick={handleEdit} style={{ marginBottom: "16px" }}>
               Edit Json
             </Button>
             <Button
               onClick={handleCopyResult}
-              style={{ marginLeft: "16px", marginBottom: "16px" }}
-            >
+              style={{ marginLeft: "16px", marginBottom: "16px" }}>
               Copy Result
             </Button>
             <Form.Item>
               <Input.TextArea
-                placeholder="JSON Output"
+                placeholder='JSON Output'
                 value={jsonOutput}
                 rows={10}
                 readOnly

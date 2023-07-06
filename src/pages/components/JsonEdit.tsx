@@ -82,59 +82,58 @@ const JsonEdit = () => {
     <>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
-          <Card title="输入区">
-            <Form.Item label="JSONPath">
+          <Card title='输入区'>
+            <Form.Item label='JSONPath'>
               <Input
                 value={jsonPath}
                 onChange={(e) => setJsonPath(e.target.value)}
-                placeholder="Enter the JSONPaths, separated by commas"
+                placeholder='Enter the JSONPaths, separated by commas'
               />
             </Form.Item>
 
-            <Form.Item label="Prefix">
+            <Form.Item label='Prefix'>
               <Input
                 value={prefix}
                 onChange={(e) => setPrefix(e.target.value)}
-                placeholder="Enter a prefix to add to all output keys"
+                placeholder='Enter a prefix to add to all output keys'
               />
             </Form.Item>
-            <Form.Item label="Insert Text">
+            <Form.Item label='Insert Text'>
               <Input
                 value={insertText}
                 onChange={(e) => setInsertText(e.target.value)}
-                placeholder="Enter a text to insert into output value"
+                placeholder='Enter a text to insert into output value'
               />
             </Form.Item>
 
-            <Form.Item label="Suffix">
+            <Form.Item label='Suffix'>
               <Input
                 value={suffix}
                 onChange={(e) => setSuffix(e.target.value)}
-                placeholder="Enter a suffix to add to all output keys"
+                placeholder='Enter a suffix to add to all output keys'
               />
             </Form.Item>
             <Space
               style={{ display: "flex", marginBottom: 8 }}
-              align="baseline"
-            >
-              <Form.Item label="Find Text">
+              align='baseline'>
+              <Form.Item label='Find Text'>
                 <Input
                   value={findText}
                   onChange={(e) => setFindText(e.target.value)}
-                  placeholder="Find in the JSON node"
+                  placeholder='Find in the JSON node'
                 />
               </Form.Item>
-              <Form.Item label="Replace Text">
+              <Form.Item label='Replace Text'>
                 <Input
                   value={replaceText}
                   onChange={(e) => setReplaceText(e.target.value)}
-                  placeholder="Replace the found text"
+                  placeholder='Replace the found text'
                 />
               </Form.Item>
             </Space>
             <Form.Item>
               <Input.TextArea
-                placeholder="JSON Input"
+                placeholder='JSON Input'
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
                 rows={10}
@@ -143,19 +142,18 @@ const JsonEdit = () => {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="结果区">
+          <Card title='结果区'>
             <Button onClick={handleEdit} style={{ marginBottom: "16px" }}>
               Edit Json
             </Button>
             <Button
               onClick={handleCopyResult}
-              style={{ marginLeft: "16px", marginBottom: "16px" }}
-            >
+              style={{ marginLeft: "16px", marginBottom: "16px" }}>
               Copy Result
             </Button>
             <Form.Item>
               <Input.TextArea
-                placeholder="JSON Output"
+                placeholder='JSON Output'
                 value={jsonOutput}
                 rows={10}
                 readOnly
