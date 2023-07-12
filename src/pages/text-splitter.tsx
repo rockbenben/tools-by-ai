@@ -11,14 +11,17 @@ const TextSplitter = () => {
   const [copiedIndexes, setCopiedIndexes] = useState(new Set());
   const [limit, setLimit] = useState(2000);
 
+  // 处理输入框变化的函数
   const handleInputChange = (e) => {
     setInputText(e.target.value);
   };
 
+  // 处理字符限制变化的函数
   const handleLimitChange = (e) => {
     setLimit(parseInt(e.target.value, 10) || 2000);
   };
 
+  // 分割文本的函数
   const splitText = () => {
     // Remove line breaks and then split the text
     const singleLineText = inputText.replace(/[\r\n]+/g, " ");
@@ -70,7 +73,7 @@ const TextSplitter = () => {
         <title>文本分割工具 - AI 工具集</title>
         <meta
           name='description'
-          content='我们的文本分割工具可以帮助你将长文本划分为满足特定字符限制的多个小段。这特别适用于需要遵守字符限制的场景，例如使用ChatGPT时的2000字符限制。'
+          content='文本分割工具可以帮助你将输入的长文本按照指定的字符限制分割成多个小段，分割后的结果会以多个文本框的形式展示在界面上，用户可以通过点击“复制”按钮将某个文本框中的内容复制到剪贴板中。这特别适用于需要遵守字符限制的场景，例如使用ChatGPT时的2000字符限制。'
         />
         <meta
           name='keywords'

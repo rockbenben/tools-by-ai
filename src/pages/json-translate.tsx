@@ -11,6 +11,7 @@ import {
   message,
   Card,
   Space,
+  Spin,
 } from "antd";
 import axios from "axios";
 import JSONPath from "jsonpath";
@@ -28,6 +29,7 @@ const JsonTranslate = () => {
   const [keyMappings, setKeyMappings] = useState<
     Array<{ inputKey: string; outputKey: string }>
   >([{ inputKey: "", outputKey: "" }]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { Option } = Select;
 
@@ -109,7 +111,7 @@ const JsonTranslate = () => {
       message.error("JSON Input 格式错误");
       return;
     }
-
+    setIsLoading(true);
     const translations = keyMappings.map(async (mapping) => {
       if (!mapping.inputKey || !mapping.outputKey) {
         return;
@@ -143,6 +145,7 @@ const JsonTranslate = () => {
     await Promise.all(translations);
 
     setJsonOutput(JSON.stringify(jsonObject, null, 2));
+    setIsLoading(false);
   };
 
   const handleCopyResult = () => {
@@ -162,7 +165,7 @@ const JsonTranslate = () => {
         <title> JSON 节点机器翻译器 - 可用于 i18n 国际化 | Tools by AI</title>
         <meta
           name='description'
-          content='这是一个强大的JSON节点翻译工具，允许用户指定JSON输入的节点进行翻译，它可以通过Google或DeepL的翻译API将选定的节点从源语言翻译为目标语言，并将翻译的结果填入相应的输出节点。'
+          content='强大的JSON节点翻译工具，允许用户指定JSON输入的节点进行翻译，它可以通过Google或DeepL的翻译API将选定的节点从源语言翻译为目标语言，并将翻译的结果填入相应的输出节点。'
         />
         <meta
           name='keywords'
@@ -245,24 +248,26 @@ const JsonTranslate = () => {
           </Col>
           <Col xs={24} lg={12}>
             <Card title='结果区'>
-              <Button
-                onClick={handleTranslate}
-                style={{ marginBottom: "16px" }}>
-                Translate Text
-              </Button>
-              <Button
-                onClick={handleCopyResult}
-                style={{ marginLeft: "16px", marginBottom: "16px" }}>
-                Copy Result
-              </Button>
-              <Form.Item>
-                <Input.TextArea
-                  placeholder='JSON Output'
-                  value={jsonOutput}
-                  rows={10}
-                  readOnly
-                />
-              </Form.Item>
+              <Spin spinning={isLoading}>
+                <Button
+                  onClick={handleTranslate}
+                  style={{ marginBottom: "16px" }}>
+                  Translate Text
+                </Button>
+                <Button
+                  onClick={handleCopyResult}
+                  style={{ marginLeft: "16px", marginBottom: "16px" }}>
+                  Copy Result
+                </Button>
+                <Form.Item>
+                  <Input.TextArea
+                    placeholder='JSON Output'
+                    value={jsonOutput}
+                    rows={10}
+                    readOnly
+                  />
+                </Form.Item>
+              </Spin>
             </Card>
           </Col>
         </Row>
