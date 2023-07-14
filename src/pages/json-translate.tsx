@@ -195,7 +195,7 @@ const JsonTranslate = () => {
           。使用建议：对于界面 UI 翻译，建议使用 Google
           Translate；而对于长句翻译，DeepL 的质量更好。请注意，Google Translate
           会直接将数据发送到 Google，然而 DeepL API
-          并不支持网页使用。因此，我在服务器上设立了一个转发接口。服务器只负责转发你的数据，不会进行任何收集。你也可以选择在本地端进行部署使用。
+          并不支持网页使用。因此，我在服务器上设立了一个转发接口。服务器只负责转发你的数据，不会进行数据收集。你也可以选择在本地端进行部署使用。
         </Typography.Paragraph>
         <Row gutter={16}>
           <Col xs={24} lg={12}>
