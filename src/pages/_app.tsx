@@ -5,19 +5,72 @@ import {
   ThunderboltOutlined,
   GithubOutlined,
 } from "@ant-design/icons";
+import type { MenuProps } from "antd";
 import { Menu, Row, Col } from "antd";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import Head from "next/head";
 import { AppProps } from "next/app";
+import Head from "next/head";
+
+const items: MenuProps["items"] = [
+  {
+    label: <Link href='/json-translate'>i18n JSON 翻译</Link>,
+    key: "/json-translate",
+  },
+  {
+    label: <Link href='/'>批量文本处理</Link>,
+    key: "/",
+  },
+  {
+    label: <Link href='/text-splitter'>文本分割</Link>,
+    key: "/text-splitter",
+  },
+  {
+    label: <Link href='/sublabel-translator'>字幕翻译</Link>,
+    key: "/sublabel-translator",
+  },
+  {
+    label: (
+      <a
+        href='https://www.aishort.top/'
+        target='_blank'
+        rel='noopener noreferrer'>
+        ChatGPT Shortcut
+      </a>
+    ),
+    key: "aishort",
+    icon: <ExperimentOutlined />,
+  },
+  {
+    label: (
+      <a
+        href='https://prompt.newzone.top/'
+        target='_blank'
+        rel='noopener noreferrer'>
+        IMGPrompt
+      </a>
+    ),
+    key: "IMGPrompt",
+    icon: <BgColorsOutlined />,
+  },
+  {
+    label: (
+      <a href='https://newzone.top/' target='_blank' rel='noopener noreferrer'>
+        LearnData 开源笔记
+      </a>
+    ),
+    key: "LearnData",
+    icon: <ThunderboltOutlined />,
+  },
+];
 
 const App: React.FC<AppProps> = ({ Component, pageProps }) => {
   const router = useRouter();
   const [current, setCurrent] = useState(router.pathname);
-  type MenuInfo = Parameters<typeof Menu>[0];
-  const onClick = (e: MenuInfo) => {
+
+  const onClick: MenuProps["onClick"] = (e) => {
     console.log("click ", e);
-    setCurrent(e.key as string);
+    setCurrent(e.key);
   };
 
   return (
@@ -42,44 +95,12 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
       </Head>
       <Row justify='space-between' align='middle' gutter={16}>
         <Col xs={20} sm={18} md={16}>
-          <Menu mode='horizontal' selectedKeys={[current]} onClick={onClick}>
-            <Menu.Item key='/'>
-              <Link href='/'>批量文本处理</Link>
-            </Menu.Item>
-            <Menu.Item key='/json-translate'>
-              <Link href='/json-translate'>i18n JSON 翻译</Link>
-            </Menu.Item>
-            <Menu.Item key='/text-splitter'>
-              <Link href='/text-splitter'>文本分割</Link>
-            </Menu.Item>
-            <Menu.Item key='/sublabel-translator'>
-              <Link href='/sublabel-translator'>字幕翻译</Link>
-            </Menu.Item>
-            <Menu.Item key='aishort' icon={<ExperimentOutlined />}>
-              <a
-                href='https://www.aishort.top/'
-                target='_blank'
-                rel='noopener noreferrer'>
-                ChatGPT Shortcut
-              </a>
-            </Menu.Item>
-            <Menu.Item key='IMGPrompt' icon={<BgColorsOutlined />}>
-              <a
-                href='https://prompt.newzone.top/'
-                target='_blank'
-                rel='noopener noreferrer'>
-                IMGPrompt
-              </a>
-            </Menu.Item>
-            <Menu.Item key='LearnData' icon={<ThunderboltOutlined />}>
-              <a
-                href='https://newzone.top/'
-                target='_blank'
-                rel='noopener noreferrer'>
-                LearnData 开源笔记
-              </a>
-            </Menu.Item>
-          </Menu>
+          <Menu
+            onClick={onClick}
+            selectedKeys={[current]}
+            mode='horizontal'
+            items={items}
+          />
         </Col>
         <Col>
           <Row gutter={16} wrap={false}>
