@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Layout, Button, Input, message, Typography, Row, Col } from "antd";
+import { Button, Input, message, Typography, Row, Col } from "antd";
 
 import { Metadata } from "next";
 export const metadata: Metadata = {
@@ -76,7 +76,7 @@ const TextSplitter = () => {
   };
 
   return (
-    <Layout.Content style={{ padding: "24px" }}>
+    <div style={{ maxWidth: "1500px", margin: "0 auto", padding: "24px" }}>
       <Row justify='center'>
         <Col xs={24} sm={24} md={20} lg={18} xl={16} xxl={14}>
           <Title level={3}>文本分割器</Title>
@@ -148,7 +148,7 @@ const TextSplitter = () => {
           </div>
         </Col>
       </Row>
-    </Layout.Content>
+    </div>
   );
 };
 export default TextSplitter;

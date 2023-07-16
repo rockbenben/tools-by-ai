@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import {
-  Layout,
   Row,
   Col,
   Button,
@@ -108,7 +107,6 @@ const JsonTranslate = () => {
     }
   };
 
-  
   const handleTranslate = async () => {
     if (!apiKey) {
       message.error("API Key 不能为空");
@@ -175,8 +173,7 @@ const JsonTranslate = () => {
   };
 
   return (
-    <Layout.Content
-      style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
       <Title level={3} style={{ marginBottom: "24px" }}>
         JSON 节点机器翻译器
       </Title>
@@ -274,7 +271,7 @@ const JsonTranslate = () => {
           </Card>
         </Col>
       </Row>
-    </Layout.Content>
+    </div>
   );
 };
 
