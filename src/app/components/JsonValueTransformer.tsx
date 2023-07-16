@@ -16,7 +16,7 @@ const JsonValueTransformer = () => {
       message.error("JSON Input 不能为空");
       return;
     }
-
+  
     let jsonObject;
     try {
       jsonObject = JSON.parse(jsonInput);
@@ -27,6 +27,7 @@ const JsonValueTransformer = () => {
 
     const transformations = keyMappings.map((mapping) => {
       if (!mapping.inputKey || !mapping.outputKey) {
+        message.error('输入键或输出键不能为空');
         return;
       }
       const inputNodes = JSONPath.nodes(jsonObject, `$..${mapping.inputKey}`);

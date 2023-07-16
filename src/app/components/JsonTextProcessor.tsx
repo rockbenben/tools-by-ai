@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input, Button, Typography, Row, Col, message } from "antd";
-import JSONPath from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 
 const JsonTextProcessor = () => {
   const [jsonInput, setJsonInput] = useState("");
@@ -12,31 +12,29 @@ const JsonTextProcessor = () => {
   const [suffixText1, setSuffixText1] = useState("");
   const [suffixText2, setSuffixText2] = useState("");
 
+  const processNode = (node, prefixText, suffixText, jsonObject) => {
+    if (!node) return "";
+    let formattedText = "";
+    JSONPath({ path: `$..${node}`, json: jsonObject }).forEach((value) => {
+      formattedText += `${prefixText.replace(
+        "{value}",
+        value
+      )}${value}${suffixText.replace("{value}", value)}\n`;
+    });
+    return formattedText;
+  };
+
   const handleProcess = () => {
     try {
       if (!jsonInput) throw new Error("请输入 JSON 数据");
       if (!node1 && !node2) throw new Error("请至少输入一个节点");
 
       const jsonObject = JSON.parse(jsonInput);
-      let result = "";
 
-      const processNode = (node, value) => {
-        const formattedPrefixText = node === node1 ? prefixText1 : prefixText2;
-        const formattedSuffixText = node === node1 ? suffixText1 : suffixText2;
+      const result1 = processNode(node1, prefixText1, suffixText1, jsonObject);
+      const result2 = processNode(node2, prefixText2, suffixText2, jsonObject);
 
-        const formattedText = `${formattedPrefixText.replace(
-          "{value}",
-          value
-        )}${value}${formattedSuffixText.replace("{value}", value)}\n`;
-        result += formattedText;
-      };
-
-      JSONPath.apply(jsonObject, `$..${node1}`, (value) =>
-        processNode(node1, value)
-      );
-      JSONPath.apply(jsonObject, `$..${node2}`, (value) =>
-        processNode(node2, value)
-      );
+      const result = result1 + result2;
 
       if (!result) throw new Error("在 JSON 数据中找不到指定的节点");
 
@@ -57,9 +55,8 @@ const JsonTextProcessor = () => {
       <Typography.Paragraph
         type='secondary'
         style={{ fontSize: "14px", marginBottom: "20px" }}>
-        请在输入框中输入 JSON 格式的数据，然后点击“匹配”按钮。工具会根据 JSON
-        数据中的 节点 1 和 节点 2
-        字段进行相应的文本操作。处理成功后，页面会显示处理后的内容，并在“匹配结果框”中显示结果。用户可以根据需要点击“复制结果”按钮，将结果复制到剪贴板。
+        根据输入的节点名称在 JSON
+        中找到相应的节点，并对节点的值进行处理，添加前缀和后缀。如果找到多个节点，将它们的值以换行形式拼接在一起。如果没有指定前缀和后缀，则只提取对应节点的值。
       </Typography.Paragraph>
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
@@ -72,15 +69,9 @@ const JsonTextProcessor = () => {
         </Col>
         <Col xs={24} md={12}>
           <Input
-            placeholder='节点1'
+            placeholder='🔍节点1'
             value={node1}
             onChange={(e) => setNode1(e.target.value)}
-            style={{ marginBottom: "10px" }}
-          />
-          <Input
-            placeholder='节点2'
-            value={node2}
-            onChange={(e) => setNode2(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input
@@ -90,15 +81,21 @@ const JsonTextProcessor = () => {
             style={{ marginBottom: "10px" }}
           />
           <Input
-            placeholder='前缀文本2'
-            value={prefixText2}
-            onChange={(e) => setPrefixText2(e.target.value)}
-            style={{ marginBottom: "10px" }}
-          />
-          <Input
             placeholder='后缀文本1'
             value={suffixText1}
             onChange={(e) => setSuffixText1(e.target.value)}
+            style={{ marginBottom: "10px" }}
+          />
+          <Input
+            placeholder='🔍节点2'
+            value={node2}
+            onChange={(e) => setNode2(e.target.value)}
+            style={{ marginBottom: "10px" }}
+          />
+          <Input
+            placeholder='前缀文本2'
+            value={prefixText2}
+            onChange={(e) => setPrefixText2(e.target.value)}
             style={{ marginBottom: "10px" }}
           />
           <Input

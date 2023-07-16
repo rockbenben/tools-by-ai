@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Form, Input, message, Card, Space } from "antd";
+import {
+  Row,
+  Col,
+  Button,
+  Form,
+  Input,
+  message,
+  Typography,
+  Card,
+  Space,
+} from "antd";
 import JSONPath from "jsonpath";
 
 const JsonEdit = () => {
@@ -7,7 +17,6 @@ const JsonEdit = () => {
   const [jsonOutput, setJsonOutput] = useState<any>({});
   const [prefix, setPrefix] = useState<string>("");
   const [suffix, setSuffix] = useState<string>("");
-  const [insertText, setInsertText] = useState<string>("");
   const [findText, setFindText] = useState<string>("");
   const [replaceText, setReplaceText] = useState<string>("");
 
@@ -18,16 +27,6 @@ const JsonEdit = () => {
     if (findText) newValue = newValue.replaceAll(findText, replaceText);
     if (prefix) newValue = prefix + newValue;
     if (suffix) newValue = newValue + suffix;
-
-    // Insert the text into the penultimate sentence
-    if (insertText) {
-      let sentences = newValue.split(". ");
-      if (sentences.length > 1) {
-        sentences.splice(sentences.length - 1, 0, insertText);
-        newValue = sentences.join(". ");
-      }
-    }
-
     return newValue;
   };
 
@@ -80,10 +79,14 @@ const JsonEdit = () => {
 
   return (
     <>
+      <Typography.Paragraph type='secondary' style={{ fontSize: "14px" }}>
+        在 JSON 中查找节点并编辑它们的值，你可以为找到的节点的值添加前缀、后缀或进行替换操作。
+        节点的查找支持批量操作，可以使用逗号来分割节点。
+      </Typography.Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title='输入区'>
-            <Form.Item label='JSONPath'>
+            <Form.Item label='🔍JSON节点'>
               <Input
                 value={jsonPath}
                 onChange={(e) => setJsonPath(e.target.value)}
@@ -91,22 +94,14 @@ const JsonEdit = () => {
               />
             </Form.Item>
 
-            <Form.Item label='Prefix'>
+            <Form.Item label='添加前缀'>
               <Input
                 value={prefix}
                 onChange={(e) => setPrefix(e.target.value)}
                 placeholder='Enter a prefix to add to all output keys'
               />
             </Form.Item>
-            <Form.Item label='Insert Text'>
-              <Input
-                value={insertText}
-                onChange={(e) => setInsertText(e.target.value)}
-                placeholder='Enter a text to insert into output value'
-              />
-            </Form.Item>
-
-            <Form.Item label='Suffix'>
+            <Form.Item label='添加后缀'>
               <Input
                 value={suffix}
                 onChange={(e) => setSuffix(e.target.value)}
@@ -116,14 +111,14 @@ const JsonEdit = () => {
             <Space
               style={{ display: "flex", marginBottom: 8 }}
               align='baseline'>
-              <Form.Item label='Find Text'>
+              <Form.Item label='查找文本'>
                 <Input
                   value={findText}
                   onChange={(e) => setFindText(e.target.value)}
                   placeholder='Find in the JSON node'
                 />
               </Form.Item>
-              <Form.Item label='Replace Text'>
+              <Form.Item label='替换文本'>
                 <Input
                   value={replaceText}
                   onChange={(e) => setReplaceText(e.target.value)}
@@ -144,7 +139,7 @@ const JsonEdit = () => {
         <Col xs={24} lg={12}>
           <Card title='结果区'>
             <Button onClick={handleEdit} style={{ marginBottom: "16px" }}>
-              Edit Json
+              Edit JSON
             </Button>
             <Button
               onClick={handleCopyResult}

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import {
   Layout,
@@ -13,9 +14,16 @@ import {
   Divider,
   Radio,
 } from "antd";
-import axios from "axios";
 import { InboxOutlined } from "@ant-design/icons";
-import Head from "next/head";
+
+import { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "在线字幕翻译工具 | Tools by AI",
+  description:
+    "一个便捷的在线字幕翻译工具，支持多种语言选择和单文件或多文件翻译。只需要提供 Google Translate API Key，就可以快速得到翻译结果。",
+  keywords:
+    "字幕翻译，在线翻译，多语言翻译，Google Translate，字幕文件，单文件翻译，多文件翻译",
+};
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -187,14 +195,27 @@ const SubtitleTranslator = () => {
   const translateText = async (text) => {
     const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
     try {
-      const response = await axios.post(url, {
-        q: text,
-        target: targetLanguage,
-        source: sourceLanguage,
-        format: "text",
-        preserveFormatting: "preserve",
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          q: text,
+          target: targetLanguage,
+          source: sourceLanguage,
+          format: "text",
+          preserveFormatting: "preserve",
+        }),
       });
-      return response.data.data.translations[0].translatedText;
+
+      if (!response.ok) {
+        console.error("Error translating text:", await response.text());
+        return "";
+      }
+
+      const data = await response.json();
+      return data.data.translations[0].translatedText;
     } catch (error) {
       console.error("Error translating text:", error);
       return "";
@@ -225,17 +246,6 @@ const SubtitleTranslator = () => {
 
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
-      <Head>
-        <title>在线字幕翻译工具 | Tools by AI</title>
-        <meta
-          name='description'
-          content='一个便捷的在线字幕翻译工具，支持多种语言选择和单文件或多文件翻译。只需要提供Google Translate API Key，就可以快速得到翻译结果。'
-        />
-        <meta
-          name='keywords'
-          content='字幕翻译,在线翻译,多语言翻译,Google Translate,字幕文件,单文件翻译,多文件翻译'
-        />
-      </Head>
       <Layout.Content
         style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
         <Title level={3} style={{ marginBottom: "24px" }}>

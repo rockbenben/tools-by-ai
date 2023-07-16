@@ -1,21 +1,41 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata = {
-  title: 'Tools by AI',
-  description: '这是一个开源的在线工具，主要由 ChatGPT 完成编程。我将把之前的本地应用处理工具在线化，并分享在这里。',
-}
+import React from "react";
+import Script from "next/script";
+import "./globals.css";
+import { Navigation } from "./ui/Navigation";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-Hans">
-      <body className={inter.className}>{children}</body>
+    <html lang='zh-Hans'>
+      <Script
+        id="piwik"
+        dangerouslySetInnerHTML={{
+          __html: `
+            var _paq = window._paq = window._paq || [];
+            _paq.push(['trackPageView']);
+            _paq.push(['enableLinkTracking']);
+            (function() {
+                var u="https://piwik.seoipo.com/";
+                _paq.push(['setTrackerUrl', u+'matomo.php']);
+                _paq.push(['setSiteId', '11']);
+                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+                g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+            })();
+        `,
+        }}
+      />
+      <body>
+        <Navigation />
+        {children}
+        <Script
+          src='https://oss.newzone.top/instantpage.min.js'
+          type='module'
+          strategy='lazyOnload'
+        />
+      </body>
     </html>
-  )
+  );
 }

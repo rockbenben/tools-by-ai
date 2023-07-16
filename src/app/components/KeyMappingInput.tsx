@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Form, Input, Space, Tooltip } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
+let idCounter = 0;
+
 const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
   const removeMapping = (id) => {
     if (keyMappings.length > 1) {
@@ -13,7 +15,7 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
   const addMapping = () => {
     setKeyMappings([
       ...keyMappings,
-      { inputKey: "", outputKey: "", id: Date.now() },
+      { inputKey: "", outputKey: "", id: idCounter++ },
     ]);
   };
 
