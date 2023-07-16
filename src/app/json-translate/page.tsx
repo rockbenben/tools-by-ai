@@ -16,15 +16,7 @@ import {
 } from "antd";
 import JSONPath from "jsonpath";
 import KeyMappingInput from "../components/KeyMappingInput";
-
-import { Metadata } from "next";
-export const metadata: Metadata = {
-  title: "JSON 节点机器翻译器 - 可用于 i18n 国际化 | Tools by AI",
-  description:
-    "强大的 JSON 节点翻译工具，允许用户指定 JSON 输入的节点进行翻译，它可以通过 Google 或 DeepL 的翻译 API 将选定的节点从源语言翻译为目标语言，并将翻译的结果填入相应的输出节点。",
-  keywords:
-    "JSON, 翻译器，JSON 翻译，语言转换，机器翻译，自动翻译，JSON 节点，Google 翻译 API, DeepL 翻译 API",
-};
+import Head from "next/head";
 
 const { Title } = Typography;
 
@@ -173,105 +165,118 @@ const JsonTranslate = () => {
   };
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
-      <Title level={3} style={{ marginBottom: "24px" }}>
-        JSON 节点机器翻译器
-      </Title>
-      <Typography.Paragraph
-        type='secondary'
-        style={{ fontSize: "14px", marginBottom: "20px" }}>
-        本页面旨在帮助用户处理和翻译 JSON 数据。它使用 Google/DeepL Translate
-        API，能够把用户指定的 JSON
-        输入中的某些节点的值翻译成目标语言，并把翻译结果填入相应的输出节点中。用户可以自定义输入/输出节点，选择源语言和目标语言，然后通过简单的点击操作完成翻译任务。
-        若你尚未拥有 API，可参考
-        <a href='https://docs.easyuseai.com/platform/translate/google_fanyi.html'>
-          接口申请教程
-        </a>
-        。如果已成功申请，可以直接查看{" "}
-        <a href='https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814'>
-          Google Translate API
-        </a>{" "}
-        或 <a href='https://www.deepl.com/zh/account/summary'>DeepL API</a>{" "}
-        。使用建议：对于界面 UI 翻译，建议使用 Google
-        Translate；而对于长句翻译，DeepL 的质量更好。请注意，Google Translate
-        会直接将数据发送到 Google，然而 DeepL API
-        并不支持网页使用。因此，我在服务器上设立了一个转发接口。服务器只负责转发你的数据，不会进行数据收集。你也可以选择在本地端进行部署使用。
-      </Typography.Paragraph>
-      <Row gutter={16}>
-        <Col xs={24} lg={12}>
-          <Card title='输入区'>
-            <Form.Item label='Translation Method'>
-              <Select
-                value={translationMethod}
-                onChange={(value) => setTranslationMethod(value)}
-                options={translationMethods}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Input
-                placeholder='Google/DeepL Translate API Key'
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
-            </Form.Item>
-            <Space style={{ display: "flex" }} align='baseline'>
-              <Form.Item label='Source Language'>
+    <>
+      <Head>
+        <title> JSON 节点机器翻译器 - 可用于 i18n 国际化 | Tools by AI</title>
+        <meta
+          name='description'
+          content='强大的JSON节点翻译工具，允许用户指定JSON输入的节点进行翻译，它可以通过Google或DeepL的翻译API将选定的节点从源语言翻译为目标语言，并将翻译的结果填入相应的输出节点。'
+        />
+        <meta
+          name='keywords'
+          content='JSON, 翻译器, JSON翻译, 语言转换, 机器翻译, 自动翻译, JSON节点,Google翻译API, DeepL翻译API'
+        />
+      </Head>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+        <Title level={3} style={{ marginBottom: "24px" }}>
+          JSON 节点机器翻译器
+        </Title>
+        <Typography.Paragraph
+          type='secondary'
+          style={{ fontSize: "14px", marginBottom: "20px" }}>
+          本页面旨在帮助用户处理和翻译 JSON 数据。它使用 Google/DeepL Translate
+          API，能够把用户指定的 JSON
+          输入中的某些节点的值翻译成目标语言，并把翻译结果填入相应的输出节点中。用户可以自定义输入/输出节点，选择源语言和目标语言，然后通过简单的点击操作完成翻译任务。
+          若你尚未拥有 API，可参考
+          <a href='https://docs.easyuseai.com/platform/translate/google_fanyi.html'>
+            接口申请教程
+          </a>
+          。如果已成功申请，可以直接查看{" "}
+          <a href='https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814'>
+            Google Translate API
+          </a>{" "}
+          或 <a href='https://www.deepl.com/zh/account/summary'>DeepL API</a>{" "}
+          。使用建议：对于界面 UI 翻译，建议使用 Google
+          Translate；而对于长句翻译，DeepL 的质量更好。请注意，Google Translate
+          会直接将数据发送到 Google，然而 DeepL API
+          并不支持网页使用。因此，我在服务器上设立了一个转发接口。服务器只负责转发你的数据，不会进行数据收集。你也可以选择在本地端进行部署使用。
+        </Typography.Paragraph>
+        <Row gutter={16}>
+          <Col xs={24} lg={12}>
+            <Card title='输入区'>
+              <Form.Item label='Translation Method'>
                 <Select
-                  value={sourceLanguage}
-                  onChange={(value) => setSourceLanguage(value)}
-                  options={languages}
+                  value={translationMethod}
+                  onChange={(value) => setTranslationMethod(value)}
+                  options={translationMethods}
                 />
               </Form.Item>
-
-              <Form.Item label='Target Language'>
-                <Select
-                  value={targetLanguage}
-                  onChange={(value) => setTargetLanguage(value)}
-                  options={languages}
+              <Form.Item>
+                <Input
+                  placeholder='Google/DeepL Translate API Key'
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
                 />
               </Form.Item>
-            </Space>
+              <Space style={{ display: "flex" }} align='baseline'>
+                <Form.Item label='Source Language'>
+                  <Select
+                    value={sourceLanguage}
+                    onChange={(value) => setSourceLanguage(value)}
+                    options={languages}
+                  />
+                </Form.Item>
 
-            <KeyMappingInput
-              keyMappings={keyMappings}
-              setKeyMappings={setKeyMappings}
-            />
-            <Form.Item>
-              <Input.TextArea
-                placeholder='JSON Input'
-                value={jsonInput}
-                onChange={(e) => setJsonInput(e.target.value)}
-                rows={10}
+                <Form.Item label='Target Language'>
+                  <Select
+                    value={targetLanguage}
+                    onChange={(value) => setTargetLanguage(value)}
+                    options={languages}
+                  />
+                </Form.Item>
+              </Space>
+
+              <KeyMappingInput
+                keyMappings={keyMappings}
+                setKeyMappings={setKeyMappings}
               />
-            </Form.Item>
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card title='结果区'>
-            <Spin spinning={isLoading}>
-              <Button
-                onClick={handleTranslate}
-                style={{ marginBottom: "16px" }}>
-                Translate Text
-              </Button>
-              <Button
-                onClick={handleCopyResult}
-                style={{ marginLeft: "16px", marginBottom: "16px" }}>
-                Copy Result
-              </Button>
               <Form.Item>
                 <Input.TextArea
-                  placeholder='JSON Output'
-                  value={jsonOutput}
+                  placeholder='JSON Input'
+                  value={jsonInput}
+                  onChange={(e) => setJsonInput(e.target.value)}
                   rows={10}
-                  readOnly
                 />
               </Form.Item>
-            </Spin>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+            </Card>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Card title='结果区'>
+              <Spin spinning={isLoading}>
+                <Button
+                  onClick={handleTranslate}
+                  style={{ marginBottom: "16px" }}>
+                  Translate Text
+                </Button>
+                <Button
+                  onClick={handleCopyResult}
+                  style={{ marginLeft: "16px", marginBottom: "16px" }}>
+                  Copy Result
+                </Button>
+                <Form.Item>
+                  <Input.TextArea
+                    placeholder='JSON Output'
+                    value={jsonOutput}
+                    rows={10}
+                    readOnly
+                  />
+                </Form.Item>
+              </Spin>
+            </Card>
+          </Col>
+        </Row>
+      </div>
+    </>
   );
 };
 
