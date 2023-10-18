@@ -51,11 +51,7 @@ Please provide all relevant code snippets for each task and explain how they wor
 yarn
 
 # Local Development
-npm run dev
-# or
 yarn dev
-# or
-pnpm dev
 
 # build and start
 yarn build && yarn start

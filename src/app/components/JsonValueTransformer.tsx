@@ -6,6 +6,21 @@ import KeyMappingInput from "./KeyMappingInput";
 const JsonValueTransformer = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
   const [jsonOutput, setJsonOutput] = useState<any>({});
+  const [isPresetUsed, setIsPresetUsed] = useState<boolean>(false);
+
+  const defaultMappings = [
+    { inputKey: "en.prompt", outputKey: "ar.prompt" },
+    { inputKey: "en.prompt", outputKey: "bn.prompt" },
+    { inputKey: "en.prompt", outputKey: "de.prompt" },
+    { inputKey: "en.prompt", outputKey: "es.prompt" },
+    { inputKey: "en.prompt", outputKey: "fr.prompt" },
+    { inputKey: "en.prompt", outputKey: "hi.prompt" },
+    { inputKey: "en.prompt", outputKey: "it.prompt" },
+    { inputKey: "en.prompt", outputKey: "ja.prompt" },
+    { inputKey: "en.prompt", outputKey: "ko.prompt" },
+    { inputKey: "en.prompt", outputKey: "pt.prompt" },
+    { inputKey: "en.prompt", outputKey: "ru.prompt" }
+  ];
 
   const [keyMappings, setKeyMappings] = useState<
     Array<{ inputKey: string; outputKey: string }>
@@ -68,6 +83,14 @@ const JsonValueTransformer = () => {
     );
   };
 
+  const toggleUsePreset = () => {
+    if (isPresetUsed) {
+      setIsPresetUsed(false);
+    } else {
+      setIsPresetUsed(true);
+      setKeyMappings(defaultMappings);
+    }
+  };
   return (
     <>
       <Typography.Paragraph type='secondary' style={{ fontSize: "14px" }}>
@@ -78,10 +101,11 @@ const JsonValueTransformer = () => {
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title='输入区'>
-            <KeyMappingInput
-              keyMappings={keyMappings}
-              setKeyMappings={setKeyMappings}
-            />
+            <Button onClick={toggleUsePreset} style={{ marginBottom: "16px" }}>
+              {isPresetUsed ? "显示映射" : "使用预设映射"}
+            </Button>
+            {!isPresetUsed && <KeyMappingInput keyMappings={keyMappings} setKeyMappings={setKeyMappings} />}
+            
             <Form.Item>
               <Input.TextArea
                 placeholder='JSON Input'

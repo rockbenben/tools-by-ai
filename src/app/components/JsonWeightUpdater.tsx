@@ -18,18 +18,23 @@ const JsonWeightUpdater = () => {
       const countData = JSON.parse(countJson);
 
       const countDataMap = new Map(
-        countData.map((item) => [item[cardIdField], item[countField]])
+        countData.map((item) => [
+          item[cardIdField].toString(),
+          item[countField],
+        ])
       );
 
       const updatedData = originalData.map((item) => {
         if (item.zh.title && item.zh.title.includes("失效")) {
           return { ...item, [weightField]: 0 };
         }
+
         if (countDataMap.has(item[idField].toString())) {
-          return {
+          const updatedItem = {
             ...item,
             [weightField]: countDataMap.get(item[idField].toString()),
           };
+          return updatedItem;
         }
         return item;
       });
