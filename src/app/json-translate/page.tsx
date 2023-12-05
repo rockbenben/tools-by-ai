@@ -18,7 +18,7 @@ import JSONPath from "jsonpath";
 import KeyMappingInput from "../components/KeyMappingInput";
 import Head from "next/head";
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 
 const JsonTranslate = () => {
   const [apiKey, setApiKey] = useState<string>("");
@@ -35,6 +35,7 @@ const JsonTranslate = () => {
   const translationMethods = [
     { value: "google", label: "Google Translate" },
     { value: "deepl", label: "DeepL" },
+    { value: "deeplx", label: "DeepLX（免费，无需填 API）" },
   ];
 
   type LanguageOption = {
@@ -92,6 +93,22 @@ const JsonTranslate = () => {
 
         const data = await response.json();
         return data.translations[0].text;
+      } else if (translationMethod === "deeplx") {
+        const url = `https://deeplx.aishort.top/translate`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: text,
+            target_lang: targetLanguage,
+            source_lang: sourceLanguage,
+          }),
+        });
+
+        const data = await response.json();
+        return data.data;
       }
     } catch (error) {
       console.error(`Failed to translate text: ${error}`);
@@ -100,8 +117,8 @@ const JsonTranslate = () => {
   };
 
   const handleTranslate = async () => {
-    if (!apiKey) {
-      message.error("API Key 不能为空");
+    if (!apiKey && translationMethod !== "deeplx") {
+      message.error("Google/DeepL 翻译方法中，API Key 不能为空");
       return;
     }
     if (!jsonInput) {
@@ -164,6 +181,7 @@ const JsonTranslate = () => {
     );
   };
 
+  const [ellipsis, setEllipsis] = useState(true);
   return (
     <>
       <Head>
@@ -174,20 +192,20 @@ const JsonTranslate = () => {
         />
         <meta
           name='keywords'
-          content='JSON, 翻译器, JSON翻译, 语言转换, 机器翻译, 自动翻译, JSON节点,Google翻译API, DeepL翻译API'
+          content='JSON, 翻译器, JSON翻译, 语言转换, 机器翻译, 自动翻译, JSON节点,Google翻译API, DeepL翻译API, DeepLX 免费翻译'
         />
       </Head>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
         <Title level={3} style={{ marginBottom: "24px" }}>
           JSON 节点机器翻译器
         </Title>
-        <Typography.Paragraph
+        <Paragraph
           type='secondary'
-          style={{ fontSize: "14px", marginBottom: "20px" }}>
-          本页面旨在帮助用户处理和翻译 JSON 数据。它使用 Google/DeepL Translate
-          API，能够把用户指定的 JSON
-          输入中的某些节点的值翻译成目标语言，并把翻译结果填入相应的输出节点中。用户可以自定义输入/输出节点，选择源语言和目标语言，然后通过简单的点击操作完成翻译任务。
-          若你尚未拥有 API，可参考
+          style={{ fontSize: "14px", marginBottom: "20px" }}
+          ellipsis={ellipsis ? { rows: 2, expandable: true, symbol: 'more' } : false}
+        >
+          本工具旨在帮助用户处理和翻译 JSON 数据。它使用 Google/DeepL Translate API，能够将用户指定的 JSON 输入中的某些节点的值翻译成目标语言，并将翻译结果填入相应的输出节点中。用户可以自定义输入/输出节点，选择源语言和目标语言，然后通过简单的点击操作完成翻译任务。
+          <br />如果你尚未注册 API，可参考
           <a href='https://docs.easyuseai.com/platform/translate/google_fanyi.html'>
             接口申请教程
           </a>
@@ -195,16 +213,17 @@ const JsonTranslate = () => {
           <a href='https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814'>
             Google Translate API
           </a>{" "}
-          或 <a href='https://www.deepl.com/zh/account/summary'>DeepL API</a>{" "}
-          。使用建议：对于界面 UI 翻译，建议使用 Google
-          Translate；而对于长句翻译，DeepL 的质量更好。请注意，Google Translate
-          会直接将数据发送到 Google，然而 DeepL API
+          或 <a href='https://www.deepl.com/zh/account/summary'>DeepL API</a>。使用建议：对于界面 UI 翻译，建议使用 Google Translate；而对于长句翻译，DeepL 的质量更好。
+          请注意，Google Translate 会直接将数据发送到 Google，然而 DeepL API
           并不支持网页使用。因此，我在服务器上设立了一个转发接口。服务器只负责转发你的数据，不会进行数据收集。你也可以选择在本地端进行部署使用。
-        </Typography.Paragraph>
+          <br />
+          如果你只需进行轻度翻译，可以使用我搭建的 DeepLX 接口，它免费且无需添加 API。
+          <a href='https://github.com/OwO-Network/DeepLX/'>DeepLX</a> 是基于 DeepL 的免费开源项目，可以将 DeepL Free API 转换为本地 API，以供第三方程序使用。
+        </Paragraph>
         <Row gutter={16}>
           <Col xs={24} lg={12}>
             <Card title='输入区'>
-              <Form.Item label='Translation Method'>
+              <Form.Item label='翻译 API'>
                 <Select
                   value={translationMethod}
                   onChange={(value) => setTranslationMethod(value)}
@@ -219,7 +238,7 @@ const JsonTranslate = () => {
                 />
               </Form.Item>
               <Space style={{ display: "flex" }} align='baseline'>
-                <Form.Item label='Source Language'>
+                <Form.Item label='源语言'>
                   <Select
                     value={sourceLanguage}
                     onChange={(value) => setSourceLanguage(value)}
@@ -227,7 +246,7 @@ const JsonTranslate = () => {
                   />
                 </Form.Item>
 
-                <Form.Item label='Target Language'>
+                <Form.Item label='目标语言'>
                   <Select
                     value={targetLanguage}
                     onChange={(value) => setTargetLanguage(value)}
@@ -256,12 +275,12 @@ const JsonTranslate = () => {
                 <Button
                   onClick={handleTranslate}
                   style={{ marginBottom: "16px" }}>
-                  Translate Text
+                  开始翻译
                 </Button>
                 <Button
                   onClick={handleCopyResult}
                   style={{ marginLeft: "16px", marginBottom: "16px" }}>
-                  Copy Result
+                  复制结果
                 </Button>
                 <Form.Item>
                   <Input.TextArea
