@@ -14,7 +14,7 @@
     "@types/react-dom": "18.2.5",
     "antd": "^5.7.0",
     "autoprefixer": "10.4.14",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "eslint": "8.43.0",
     "eslint-config-next": "^13.4.10",
     "http-proxy-middleware": "^2.0.6",
