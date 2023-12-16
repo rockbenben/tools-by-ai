@@ -40,6 +40,11 @@ Please provide all relevant code snippets for each task and explain how they wor
 
 ## Deploy
 
+System Requirements:
+
+- [Node.js 18.17](https://nodejs.org/) or later.
+- macOS, Windows (including WSL), and Linux are supported.
+
 ### Deploy With Vercel
 
 [![Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Frockbenben%2Ftools-by-ai%2Ftree%2Fgh-pages)
@@ -59,4 +64,4 @@ yarn build && yarn start
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/index.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
