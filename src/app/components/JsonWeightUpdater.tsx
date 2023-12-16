@@ -18,10 +18,7 @@ const JsonWeightUpdater = () => {
       const countData = JSON.parse(countJson);
 
       const countDataMap = new Map(
-        countData.map((item) => [
-          item[cardIdField].toString(),
-          item[countField],
-        ])
+        countData.map((item) => [item[cardIdField], item[countField]])
       );
 
       const updatedData = originalData.map((item) => {
