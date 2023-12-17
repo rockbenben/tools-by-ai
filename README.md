@@ -36,9 +36,14 @@ Please provide all relevant code snippets for each task and explain how they wor
 
 ### i18n 翻译器
 
-本工具适用于 i18n 文件翻译或 JSON 等规则文本翻译，同时支持规则文本的批量处理。默认使用 Google Translate API。
+本工具适用于 i18n 文件翻译或 JSON 等规则文本翻译，同时支持规则文本的批量处理。支持 Google Translate API、DeepL、DeepLX。
 
 ## Deploy
+
+System Requirements:
+
+- [Node.js 18.17](https://nodejs.org/) or later.
+- macOS, Windows (including WSL), and Linux are supported.
 
 ### Deploy With Vercel
 
@@ -51,11 +56,7 @@ Please provide all relevant code snippets for each task and explain how they wor
 yarn
 
 # Local Development
-npm run dev
-# or
 yarn dev
-# or
-pnpm dev
 
 # build and start
 yarn build && yarn start
@@ -63,4 +64,4 @@ yarn build && yarn start
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/index.tsx`. The page auto-updates as you edit the file.
+You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
