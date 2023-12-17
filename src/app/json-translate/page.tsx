@@ -2,19 +2,10 @@
 
 import React, { useState } from "react";
 import {
-  Row,
-  Col,
-  Button,
-  Form,
-  Typography,
-  Input,
-  Select,
-  message,
-  Card,
-  Space,
-  Spin,
+  Row, Col, Button, Form, Typography, Input, Select, message, Card, Space, Spin
 } from "antd";
-import JSONPath from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
+import { translateText } from '../components/translateText';
 import KeyMappingInput from "../components/KeyMappingInput";
 import Head from "next/head";
 
@@ -59,63 +50,6 @@ const JsonTranslate = () => {
     { value: "bn", label: "孟加拉语 (仅 Google)" },
   ];
 
-  const translateText = async (text: string) => {
-    try {
-      if (translationMethod === "google") {
-        const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            q: text,
-            target: targetLanguage,
-            source: sourceLanguage,
-          }),
-        });
-
-        const data = await response.json();
-        return data.data.translations[0].translatedText;
-      } else if (translationMethod === "deepl") {
-        const response = await fetch("/api/deepl", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text: text,
-            target_lang: targetLanguage,
-            source_lang: sourceLanguage,
-            authKey: apiKey,
-          }),
-        });
-
-        const data = await response.json();
-        return data.translations[0].text;
-      } else if (translationMethod === "deeplx") {
-        const url = `https://deeplx.aishort.top/translate`;
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            text: text,
-            target_lang: targetLanguage,
-            source_lang: sourceLanguage,
-          }),
-        });
-
-        const data = await response.json();
-        return data.data;
-      }
-    } catch (error) {
-      console.error(`Failed to translate text: ${error}`);
-      return null; // or some default value
-    }
-  };
-
   const handleTranslate = async () => {
     if (!apiKey && translationMethod !== "deeplx") {
       message.error("Google/DeepL 翻译方法中，API Key 不能为空");
@@ -138,8 +72,8 @@ const JsonTranslate = () => {
       if (!mapping.inputKey || !mapping.outputKey) {
         return;
       }
-      const inputNodes = JSONPath.nodes(jsonObject, `$..${mapping.inputKey}`);
-      const outputNodes = JSONPath.nodes(jsonObject, `$..${mapping.outputKey}`);
+      const inputNodes = JSONPath({ path: `$..${mapping.inputKey}`, json: jsonObject, resultType: 'all' });
+      const outputNodes = JSONPath({ path: `$..${mapping.outputKey}`, json: jsonObject, resultType: 'all' });
 
       if (inputNodes.length === 0) {
         message.error(`输入键 ${mapping.inputKey} 在 JSON 中找不到`);
@@ -151,12 +85,22 @@ const JsonTranslate = () => {
       }
 
       const tasks = inputNodes.map(async (node, index) => {
-        const translatedText = await translateText(node.value);
-        JSONPath.apply(
-          jsonObject,
-          JSONPath.stringify(outputNodes[index].path),
-          () => translatedText
-        );
+        const translatedText = await translateText({
+          text: node.value,
+          translationMethod,
+          targetLanguage,
+          sourceLanguage,
+          apiKey
+        });
+        // 应用翻译文本
+        let outputNodePathArray = JSONPath.toPathArray(outputNodes[index].path);
+        if (outputNodePathArray && outputNodePathArray.length > 0) {
+          let currentNode = jsonObject;
+          for (let i = 1; i < outputNodePathArray.length - 1; i++) {
+            currentNode = currentNode[outputNodePathArray[i]];
+          }
+          currentNode[outputNodePathArray[outputNodePathArray.length - 1]] = translatedText;
+        }
       });
 
       // 等待所有的翻译任务完成

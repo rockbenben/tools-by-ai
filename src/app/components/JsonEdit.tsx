@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Form, Input, message, Typography, Card, Space,Checkbox } from "antd";
-import JSONPath from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 
 const JsonEdit = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
@@ -66,7 +66,7 @@ const JsonEdit = () => {
     paths.forEach((path) => {
       if (!path) return;
 
-      const nodes = JSONPath.nodes(jsonObject, `$..${path}`);
+      const nodes = JSONPath({ path:  `$..${path}`, json: jsonObject, resultType: 'all' });
 
       if (nodes.length === 0) {
         message.error(`在 JSON 中找不到路径 ${path}`);
@@ -74,7 +74,16 @@ const JsonEdit = () => {
       }
 
       nodes.forEach((node) => {
-        JSONPath.apply(jsonObject, JSONPath.stringify(node.path), () => applyPrefixSuffix(node.value, JSONPath.stringify(node.path)));
+        let nodePathArray = JSONPath.toPathArray(node.path);
+        if (nodePathArray && nodePathArray.length > 0) {
+          let currentNode = jsonObject;
+          // 遍历路径数组，直到到达倒数第二个元素
+          for (let i = 1; i < nodePathArray.length - 1; i++) {
+            currentNode = currentNode[nodePathArray[i]];
+          }
+          // 应用 applyPrefixSuffix 函数并更新值
+          currentNode[nodePathArray[nodePathArray.length - 1]] = applyPrefixSuffix(node.value, nodePathArray.join('.'));
+        }
       });
     });
 

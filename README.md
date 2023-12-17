@@ -36,7 +36,7 @@ Please provide all relevant code snippets for each task and explain how they wor
 
 ### i18n 翻译器
 
-本工具适用于 i18n 文件翻译或 JSON 等规则文本翻译，同时支持规则文本的批量处理。默认使用 Google Translate API。
+本工具适用于 i18n 文件翻译或 JSON 等规则文本翻译，同时支持规则文本的批量处理。支持 Google Translate API、DeepL、DeepLX。
 
 ## Deploy
 

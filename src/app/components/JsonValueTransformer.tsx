@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Form, Typography, Input, message, Card } from "antd";
-import JSONPath from "jsonpath";
+import { JSONPath } from "jsonpath-plus";
 import KeyMappingInput from "./KeyMappingInput";
 
 const JsonValueTransformer = () => {
@@ -45,8 +45,8 @@ const JsonValueTransformer = () => {
         message.error('输入键或输出键不能为空');
         return;
       }
-      const inputNodes = JSONPath.nodes(jsonObject, `$..${mapping.inputKey}`);
-      const outputNodes = JSONPath.nodes(jsonObject, `$..${mapping.outputKey}`);
+      const inputNodes = JSONPath({ path: `$..${mapping.inputKey}`, json: jsonObject, resultType: 'all' });
+      const outputNodes = JSONPath({ path: `$..${mapping.outputKey}`, json: jsonObject, resultType: 'all' });
 
       if (inputNodes.length === 0) {
         message.error(`输入键 ${mapping.inputKey} 在 JSON 中找不到`);
@@ -58,11 +58,14 @@ const JsonValueTransformer = () => {
       }
 
       inputNodes.forEach((node, index) => {
-        JSONPath.apply(
-          jsonObject,
-          JSONPath.stringify(outputNodes[index].path),
-          () => node.value
-        );
+        let outputNodePathArray = JSONPath.toPathArray(outputNodes[index].path);
+        if (outputNodePathArray && outputNodePathArray.length > 0) {
+          let currentNode = jsonObject;
+          for (let i = 1; i < outputNodePathArray.length - 1; i++) {
+            currentNode = currentNode[outputNodePathArray[i]];
+          }
+          currentNode[outputNodePathArray[outputNodePathArray.length - 1]] = node.value;
+        }
       });
     });
 
