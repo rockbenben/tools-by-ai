@@ -32,8 +32,8 @@ const FlareDataPage = () => {
       const cleanHref = href.replace(/https?:\/\//, "");
       result += `- name: ${name}\n  link: ${cleanHref}\n  icon: ${name}\n`;
 
-      if (rule === "bookmark") {
-        result += `  desc: "${name}"\n`;
+      if (rule === "app") {
+        result += `  desc: ${name}\n`;
       } else {
         result += `  category: "${categoryId}"\n`;
       }
