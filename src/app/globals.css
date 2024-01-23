@@ -25,3 +25,20 @@ body {
     )
     rgb(var(--background-start-rgb));
 } */
+/* 全局滚动条样式 */
+::-webkit-scrollbar {
+  width: 5px; /* 滚动条宽度 */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* 透明背景 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d9d9d9; /* 使用变量定义颜色 */
+  border-radius: 10px; /* 圆角效果 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #188fff70; /* 悬停时的颜色 */
+}
