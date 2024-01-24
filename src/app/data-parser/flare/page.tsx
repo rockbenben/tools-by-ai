@@ -44,8 +44,7 @@ const FlareDataPage = () => {
     while ((match = regex.exec(inputData)) !== null) {
       const href = match[1];
       const name = match[2];
-      const cleanHref = href.replace(/https?:\/\//, "");
-      result += `- name: ${name}\n  link: ${cleanHref}\n  icon: ${name}\n`;
+      result += `- name: ${name}\n  link: ${href}\n  icon: ${name}\n`;
 
       if (rule === "app") {
         result += `  desc: ${name}\n`;
