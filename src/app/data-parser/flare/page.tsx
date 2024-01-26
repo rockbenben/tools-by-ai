@@ -69,14 +69,19 @@ const FlareDataPage = () => {
     if (currentFormat === "bookmark") {
       const lines = inputData.split("\n");
       let converted = "";
+      let currentName = ""; // 用于存储当前处理的书签项的名称
 
       for (let line of lines) {
+        if (line.trim().startsWith("- name:")) {
+          // 存储当前书签项的名称
+          currentName = line.split(":")[1].trim();
+        }
+
         if (line.trim().startsWith("category:")) {
-          // 提取 name 行的值作为 desc
-          const nameLine = lines.find((l) => l.trim().startsWith("- name:"));
-          const name = nameLine.split(":")[1].trim();
-          converted += `    desc: ${name}\n`;
-        } else {
+          // 使用当前书签项的名称作为 desc
+          converted += `    desc: ${currentName}\n`;
+        } else if (!line.trim().startsWith("category:")) {
+          // 其他行直接添加到转换结果中
           converted += line + "\n";
         }
       }
