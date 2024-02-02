@@ -3,6 +3,14 @@ import Script from "next/script";
 import "./globals.css";
 import { Navigation } from "./ui/Navigation";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Tools by AI",
+  description: "由 AI 生成的多种文本工具",
+  keywords: "ai tools",
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-Hans">
