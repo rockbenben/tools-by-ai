@@ -3,19 +3,15 @@ import Script from "next/script";
 import "./globals.css";
 import { Navigation } from "./ui/Navigation";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='zh-Hans'>
+    <html lang="zh-Hans">
       <body>
         <Navigation />
         <script data-ad-client="ca-pub-7585955822109216" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
         {children}
         <Script
-          id='piwik'
+          id="piwik"
           dangerouslySetInnerHTML={{
             __html: `
             var _paq = window._paq = window._paq || [];
@@ -31,11 +27,7 @@ export default function RootLayout({
         `,
           }}
         />
-        <Script
-          src='https://oss.newzone.top/instantpage.min.js'
-          type='module'
-          strategy='lazyOnload'
-        />
+        <Script src="https://oss.newzone.top/instantpage.min.js" type="module" strategy="lazyOnload" />
       </body>
     </html>
   );

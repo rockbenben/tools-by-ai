@@ -1,18 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Input,
-  Upload,
-  message,
-  Typography,
-  Select,
-  Space,
-  Modal,
-  Progress,
-  Divider,
-  Radio,
-} from "antd";
+import { Button, Input, Upload, message, Typography, Select, Space, Modal, Progress, Divider, Radio } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import Head from "next/head";
 
@@ -142,20 +130,13 @@ const SubtitleTranslator = () => {
             const isTimecode = /^[\d:,]+ --> [\d:,]+$/.test(line);
             const isIndex = /^\d+$/.test(line);
             const isNumeric = /^\d+(\.\d+)?$/.test(line.trim());
-            if (
-              !isIndex &&
-              !isTimecode &&
-              !isNumeric &&
-              line.trim().length > 0
-            ) {
+            if (!isIndex && !isTimecode && !isNumeric && line.trim().length > 0) {
               contentLines.push(line);
               contentIndices.push(index);
             }
           });
 
-          const translatedContent = await translateText(
-            contentLines.join("\n")
-          );
+          const translatedContent = await translateText(contentLines.join("\n"));
           const translatedLines = translatedContent.split("\n");
 
           let translatedTextArray = [...lines];
@@ -239,56 +220,42 @@ const SubtitleTranslator = () => {
     <>
       <Head>
         <title>在线字幕翻译工具 | Tools by AI</title>
-        <meta
-          name='description'
-          content='一个便捷的在线字幕翻译工具，支持多种语言选择和单文件或多文件翻译。只需要提供Google Translate API Key，就可以快速得到翻译结果。'
-        />
-        <meta
-          name='keywords'
-          content='字幕翻译,在线翻译,多语言翻译,Google Translate,字幕文件,单文件翻译,多文件翻译'
-        />
+        <meta name="description" content="一个便捷的在线字幕翻译工具，支持多种语言选择和单文件或多文件翻译。只需要提供Google Translate API Key，就可以快速得到翻译结果。" />
+        <meta name="keywords" content="字幕翻译,在线翻译,多语言翻译,Google Translate,字幕文件,单文件翻译,多文件翻译" />
       </Head>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
         <Title level={3} style={{ marginBottom: "24px" }}>
           字幕翻译
         </Title>
-        <Typography.Paragraph
-          type='secondary'
-          style={{ fontSize: "14px", marginBottom: "20px" }}>
+        <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
           写完后发现本页面与
-          <a href='https://github.com/1c7/Translate-Subtitle-File'>
-            1c7/Translate-Subtitle-File
-          </a>
+          <a href="https://github.com/1c7/Translate-Subtitle-File">1c7/Translate-Subtitle-File</a>
           项目重叠了，建议直接使用该项目的
-          <a href='https://tern.1c7.me/#/'>网页版</a>。
+          <a href="https://tern.1c7.me/#/">网页版</a>。
         </Typography.Paragraph>
-        <Radio.Group
-          value={translationMode}
-          onChange={handleTranslationModeChange}>
-          <Radio.Button value='single'>单文件翻译</Radio.Button>
-          <Radio.Button value='multiple'>多文件翻译</Radio.Button>
+        <Radio.Group value={translationMode} onChange={handleTranslationModeChange}>
+          <Radio.Button value="single">单文件翻译</Radio.Button>
+          <Radio.Button value="multiple">多文件翻译</Radio.Button>
         </Radio.Group>
         {translationMode === "single" && (
           <>
             <div>
               <Dragger
                 customRequest={({ file }) => handleFileUpload(file)}
-                accept='.srt'
+                accept=".srt"
                 showUploadList={false}
                 style={{
                   marginBottom: "16px",
                   padding: "16px 0",
                 }}>
-                <p className='ant-upload-drag-icon'>
+                <p className="ant-upload-drag-icon">
                   <InboxOutlined />
                 </p>
-                <p className='ant-upload-text'>
-                  点击或拖拽文件到此区域以上传 .srt 字幕文件
-                </p>
+                <p className="ant-upload-text">点击或拖拽文件到此区域以上传 .srt 字幕文件</p>
               </Dragger>
             </div>
             <TextArea
-              placeholder='或在此处粘贴字幕文本（仅支持 .srt 格式）'
+              placeholder="或在此处粘贴字幕文本（仅支持 .srt 格式）"
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
               rows={10}
@@ -300,33 +267,24 @@ const SubtitleTranslator = () => {
           <div>
             <Dragger
               customRequest={({ file }) => handleMultipleFileUpload(file)}
-              accept='.srt'
+              accept=".srt"
               multiple
               showUploadList={true}
               style={{
                 marginBottom: "16px",
                 padding: "16px 0",
               }}>
-              <p className='ant-upload-drag-icon'>
+              <p className="ant-upload-drag-icon">
                 <InboxOutlined />
               </p>
-              <p className='ant-upload-text'>
-                点击或拖拽文件到此区域以上传多个 .srt 字幕文件
-              </p>
+              <p className="ant-upload-text">点击或拖拽文件到此区域以上传多个 .srt 字幕文件</p>
             </Dragger>
           </div>
         )}
         <Space>
-          <Input
-            placeholder='输入 Google Translate API Key'
-            value={apiKey}
-            onChange={handleApiKeyChange}
-          />
+          <Input placeholder="输入 Google Translate API Key" value={apiKey} onChange={handleApiKeyChange} />
           <span>预翻译语言：</span>
-          <Select
-            value={sourceLanguage}
-            onChange={handleSourceLanguageChange}
-            style={{ width: "200px" }}>
+          <Select value={sourceLanguage} onChange={handleSourceLanguageChange} style={{ width: "200px" }}>
             {languageOptions.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
@@ -334,10 +292,7 @@ const SubtitleTranslator = () => {
             ))}
           </Select>
           <span>目标语言：</span>
-          <Select
-            value={targetLanguage}
-            onChange={handleTargetLanguageChange}
-            style={{ width: "200px" }}>
+          <Select value={targetLanguage} onChange={handleTargetLanguageChange} style={{ width: "200px" }}>
             {languageOptions.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
@@ -345,40 +300,21 @@ const SubtitleTranslator = () => {
             ))}
           </Select>
         </Space>
-        <Divider type='vertical' />
+        <Divider type="vertical" />
         <Space>
-          <Button
-            onClick={
-              translationMode === "single"
-                ? handleTranslate
-                : handleMultipleTranslate
-            }
-            disabled={translateInProgress}>
+          <Button onClick={translationMode === "single" ? handleTranslate : handleMultipleTranslate} disabled={translateInProgress}>
             翻译
           </Button>
           {translationMode === "single" && (
             <>
-              <Button
-                onClick={() => navigator.clipboard.writeText(translatedText)}>
-                复制结果
-              </Button>
+              <Button onClick={() => navigator.clipboard.writeText(translatedText)}>复制结果</Button>
               <Button onClick={handleExportSubtitle}>导出字幕文件</Button>
             </>
           )}
         </Space>
         {translateInProgress && (
-          <Modal
-            title='翻译中'
-            visible={translateInProgress}
-            footer={null}
-            closable={false}>
-            <Progress
-              type='circle'
-              format={() => `${Math.floor(runningTime)}s`}
-              percent={100}
-              width={80}
-              style={{ marginTop: "16px" }}
-            />
+          <Modal title="翻译中" visible={translateInProgress} footer={null} closable={false}>
+            <Progress type="circle" format={() => `${Math.floor(runningTime)}s`} percent={100} width={80} style={{ marginTop: "16px" }} />
           </Modal>
         )}
         {translationMode === "single" && (
@@ -386,12 +322,7 @@ const SubtitleTranslator = () => {
             <Title level={5} style={{ marginBottom: "8px" }}>
               翻译结果
             </Title>
-            <TextArea
-              readOnly
-              value={translatedText}
-              rows={10}
-              style={{ width: "100%", marginBottom: "16px" }}
-            />
+            <TextArea readOnly value={translatedText} rows={10} style={{ width: "100%", marginBottom: "16px" }} />
           </>
         )}
       </div>

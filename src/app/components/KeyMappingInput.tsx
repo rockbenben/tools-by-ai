@@ -13,23 +13,14 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
   };
 
   const addMapping = () => {
-    setKeyMappings([
-      ...keyMappings,
-      { inputKey: "", outputKey: "", id: idCounter++ },
-    ]);
+    setKeyMappings([...keyMappings, { inputKey: "", outputKey: "", id: idCounter++ }]);
   };
 
   return (
     <>
       {keyMappings.map((mapping, index) => (
-        <Space
-          key={mapping.id}
-          style={{ display: "flex", marginBottom: 8 }}
-          align='baseline'>
-          <Form.Item
-            name={`inputKey${mapping.id}`}
-            label={`输入键名 ${index + 1}`}
-            style={{ marginBottom: 0 }}>
+        <Space key={mapping.id} style={{ display: "flex", marginBottom: 8 }} align="baseline">
+          <Form.Item name={`inputKey${mapping.id}`} label={`输入键名 ${index + 1}`} style={{ marginBottom: 0 }}>
             <Input
               value={mapping.inputKey}
               onChange={(e) => {
@@ -39,10 +30,7 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
               }}
             />
           </Form.Item>
-          <Form.Item
-            name={`outputKey${mapping.id}`}
-            label={`输出键名 ${index + 1}`}
-            style={{ marginBottom: 0 }}>
+          <Form.Item name={`outputKey${mapping.id}`} label={`输出键名 ${index + 1}`} style={{ marginBottom: 0 }}>
             <Input
               value={mapping.outputKey}
               onChange={(e) => {
@@ -52,21 +40,13 @@ const KeyMappingInput = ({ keyMappings = [], setKeyMappings }) => {
               }}
             />
           </Form.Item>
-          <Tooltip title='删除翻译节点'>
-            <Button
-              onClick={() => removeMapping(mapping.id)}
-              type='default'
-              icon={<MinusCircleOutlined />}
-            />
+          <Tooltip title="删除翻译节点">
+            <Button onClick={() => removeMapping(mapping.id)} type="default" icon={<MinusCircleOutlined />} />
           </Tooltip>
         </Space>
       ))}
       <Form.Item>
-        <Button
-          onClick={addMapping}
-          type='dashed'
-          block
-          icon={<PlusOutlined />}>
+        <Button onClick={addMapping} type="dashed" block icon={<PlusOutlined />}>
           添加翻译节点
         </Button>
       </Form.Item>
