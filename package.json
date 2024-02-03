@@ -9,7 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "antd": "^5.13.3",
+    "@ant-design/nextjs-registry": "^1.0.0",
+    "antd": "^5.14.0",
     "http-proxy-middleware": "^2.0.6",
     "jsonpath-plus": "^8.0.0",
     "lodash": "^4.17.21",
