@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { MenuProps } from "antd";
 import { Menu, Row, Col } from "antd";
 import { usePathname } from "next/navigation";
-import { BgColorsOutlined, ExperimentOutlined, ThunderboltOutlined, GithubOutlined } from "@ant-design/icons";
+import { BgColorsOutlined, DatabaseOutlined, ExperimentOutlined, ThunderboltOutlined, GithubOutlined } from "@ant-design/icons";
 
 const items: MenuProps["items"] = [
   {
@@ -17,8 +17,19 @@ const items: MenuProps["items"] = [
     key: "/",
   },
   {
-    label: <Link href="/data-parser/flare">文本解析器</Link>,
-    key: "/data-parser/flare",
+    label: "数据解析工具",
+    key: "dataParser",
+    icon: <DatabaseOutlined />,
+    children: [
+      {
+        label: <Link href="/data-parser/img-prompt">IMGPrompt 数据转换器</Link>,
+        key: "/data-parser/img-prompt",
+      },
+      {
+        label: <Link href="/data-parser/flare">Flare 书签解析工具</Link>,
+        key: "/data-parser/flare",
+      },
+    ],
   },
   {
     label: <Link href="/text-splitter">文本分割</Link>,
