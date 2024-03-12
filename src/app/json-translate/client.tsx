@@ -3,27 +3,28 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Tooltip, Form, Typography, Input, Select, message, Card, Space, Spin } from "antd";
 import { JSONPath } from "jsonpath-plus";
-import _ from "lodash";
 import { translateText } from "../components/translateText";
+import { preprocessJson } from "../components/preprocessJson";
 import KeyMappingInput from "../components/KeyMappingInput";
 
 const { Title, Paragraph } = Typography;
 
 const JsonTranslate = () => {
   const [apiKey, setApiKey] = useState<string>("");
-  const [jsonInput, setJsonInput] = useState<string>("");
-  const [jsonOutput, setJsonOutput] = useState<string>("");
   const [translationMethod, setTranslationMethod] = useState<string>("deeplx");
   const [sourceLanguage, setSourceLanguage] = useState<string>("en");
   const [targetLanguage, setTargetLanguage] = useState<string>("zh");
   const [showSimpleInput, setShowSimpleInput] = useState(true);
   const [simpleInputKey, setSimpleInputKey] = useState("");
+  const [keyMappings, setKeyMappings] = useState<Array<{ inputKey: string; outputKey: string }>>([{ inputKey: "", outputKey: "" }]);
+
+  const [jsonInput, setJsonInput] = useState("");
+  const [jsonOutput, setJsonOutput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const toggleInputType = () => {
     setShowSimpleInput(!showSimpleInput);
   };
-  const [keyMappings, setKeyMappings] = useState<Array<{ inputKey: string; outputKey: string }>>([{ inputKey: "", outputKey: "" }]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [jsonInputError, setJsonInputError] = useState(null);
 
   const translationMethods = [
     { value: "google", label: "Google Translate" },
@@ -52,23 +53,9 @@ const JsonTranslate = () => {
     { value: "bn", label: "孟加拉语 (仅 Google)" },
   ];
 
-  // Parse JSON Input, set error if invalid
-  const parseAndSetJsonInput = (input) => {
-    try {
-      const parsedJson = JSON.parse(input);
-      setJsonInput(JSON.stringify(parsedJson, null, 2));
-      setJsonInputError(null);
-    } catch (error) {
-      setJsonInputError("JSON Input 格式错误，请检查");
-    }
-  };
-
-  const debouncedParseAndSetJsonInput = _.debounce(parseAndSetJsonInput, 1500);
-
   const handleJsonInputChange = (e) => {
     const input = e.target.value;
     setJsonInput(input);
-    debouncedParseAndSetJsonInput(input);
   };
 
   const handleTranslate = async () => {
@@ -87,11 +74,12 @@ const JsonTranslate = () => {
 
     let jsonObject;
     try {
-      jsonObject = JSON.parse(jsonInput);
+      jsonObject = preprocessJson(jsonInput);
     } catch (error) {
-      message.error("JSON Input 格式错误");
+      message.error("JSON Input 格式错误或无法处理");
       return;
     }
+    setJsonInput(JSON.stringify(jsonObject, null, 2));
     setIsLoading(true);
 
     try {
@@ -217,10 +205,7 @@ const JsonTranslate = () => {
             ) : (
               <KeyMappingInput keyMappings={keyMappings} setKeyMappings={setKeyMappings} />
             )}
-            <Form.Item>
-              <Input.TextArea placeholder="JSON Input，输入要翻译的 JSON" value={jsonInput} onChange={handleJsonInputChange} rows={10} />
-              {jsonInputError && <div style={{ color: "red" }}>{jsonInputError}</div>}
-            </Form.Item>
+            <Input.TextArea placeholder="JSON Input，输入要翻译的 JSON" value={jsonInput} onChange={handleJsonInputChange} rows={10} />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
@@ -243,9 +228,7 @@ const JsonTranslate = () => {
                   {showSimpleInput ? "切换到映射翻译" : "切换到单一键名翻译"}
                 </Tooltip>
               </Button>
-              <Form.Item>
-                <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
-              </Form.Item>
+              <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
             </Spin>
           </Card>
         </Col>
