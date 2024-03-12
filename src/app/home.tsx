@@ -8,6 +8,7 @@ import JsonArrayInserter from "./components/JsonArrayInserter";
 import JsonWeightUpdater from "./components/JsonWeightUpdater";
 import JsonValueTransformer from "./components/JsonValueTransformer";
 import JsonEdit from "./components/JsonEdit";
+import JsonKeyValueSwapper from "./components/JsonKeyValueSwapper";
 
 const { Title } = Typography;
 const TextProcessingTool = () => {
@@ -19,6 +20,8 @@ const TextProcessingTool = () => {
         return <RegexMatcher />;
       case "JsonValueTransformer":
         return <JsonValueTransformer />;
+      case "JsonKeyValueSwapper":
+        return <JsonKeyValueSwapper />;
       case "JsonEdit":
         return <JsonEdit />;
       case "textProcessor":
@@ -44,6 +47,7 @@ const TextProcessingTool = () => {
       <Radio.Group onChange={onChange} value={selectedTool} style={{ marginBottom: "16px" }}>
         <Radio value="regex">正则匹配工具</Radio>
         <Radio value="JsonValueTransformer">JSON 键值替换</Radio>
+        <Radio value="JsonKeyValueSwapper">JSON 键值交换</Radio>
         <Radio value="JsonEdit">JSON Editor</Radio>
         <Radio value="textProcessor">JSON 值提取</Radio>
         <Radio value="arrayInserter">数组插入工具</Radio>
