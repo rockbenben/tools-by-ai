@@ -151,7 +151,7 @@ const JsonTranslate = () => {
         <br />
         了解更多：<a href="https://newzone.top/apps/devdocs/json-translate.html">使用教程</a>；
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
-        <a href="https://www.deepl.com/zh/account/summary">DeepL API</a>。
+        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。
       </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
