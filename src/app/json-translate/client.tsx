@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Tooltip, Form, Typography, Input, Select, message, Card, Space, Spin } from "antd";
 import { JSONPath } from "jsonpath-plus";
-import { translateText } from "../components/translateText";
-import { preprocessJson } from "../components/preprocessJson";
 import KeyMappingInput from "../components/KeyMappingInput";
+import { preprocessJson } from "../components/preprocessJson";
+import { translateText } from "../components/translateText";
 import { translationMethods, languages } from "../components/transalteConstants";
 
 const { Title, Paragraph } = Typography;

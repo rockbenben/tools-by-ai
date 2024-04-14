@@ -29,11 +29,15 @@ const items: MenuProps["items"] = [
         label: <Link href="/data-parser/flare">Flare 书签解析工具</Link>,
         key: "/data-parser/flare",
       },
+      {
+        label: <Link href="/text-splitter">文本分割</Link>,
+        key: "/text-splitter",
+      },
     ],
   },
   {
-    label: <Link href="/text-splitter">文本分割</Link>,
-    key: "/text-splitter",
+    label: <Link href="/aishort-translate">多语言一键翻译</Link>,
+    key: "/aishort-translate",
   },
   {
     label: <Link href="/sublabel-translator">字幕翻译</Link>,

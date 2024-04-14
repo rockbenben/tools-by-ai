@@ -2,18 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Input, Upload, message, Typography, Select, Space, Modal, Progress, Divider, Radio } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
+import { languages } from "../components/transalteConstants";
 
 const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 const { Dragger } = Upload;
-
-const languageOptions = [
-  { label: "英文", value: "en" },
-  { label: "日文", value: "ja" },
-  { label: "中文", value: "zh-CN" },
-  // 添加其他语言选项
-];
 
 const SubtitleTranslator = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -23,7 +17,7 @@ const SubtitleTranslator = () => {
   const [translatedText, setTranslatedText] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [sourceLanguage, setSourceLanguage] = useState<string>("en");
-  const [targetLanguage, setTargetLanguage] = useState<string>("zh-CN");
+  const [targetLanguage, setTargetLanguage] = useState<string>("zh");
   const [translateInProgress, setTranslateInProgress] = useState(false);
   const [translationMode, setTranslationMode] = useState("single");
   const [startTime, setStartTime] = useState(null);
@@ -221,10 +215,8 @@ const SubtitleTranslator = () => {
         字幕翻译
       </Title>
       <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
-        写完后发现本页面与
-        <a href="https://github.com/1c7/Translate-Subtitle-File">1c7/Translate-Subtitle-File</a>
-        项目重叠了，建议直接使用该项目的
-        <a href="https://tern.1c7.me/#/">网页版</a>。
+        写完后发现本工具与 <a href="https://github.com/1c7/Translate-Subtitle-File">1c7/Translate-Subtitle-File</a>
+        功能重叠了，你也可以尝试使用它的 <a href="https://tern.1c7.me/#/">网页版</a>。
       </Typography.Paragraph>
       <Radio.Group value={translationMode} onChange={handleTranslationModeChange}>
         <Radio.Button value="single">单文件翻译</Radio.Button>
@@ -278,7 +270,7 @@ const SubtitleTranslator = () => {
         <Input placeholder="输入 Google Translate API Key" value={apiKey} onChange={handleApiKeyChange} />
         <span>预翻译语言：</span>
         <Select value={sourceLanguage} onChange={handleSourceLanguageChange} style={{ width: "200px" }}>
-          {languageOptions.map((option) => (
+          {languages.map((option) => (
             <Option key={option.value} value={option.value}>
               {option.label}
             </Option>
@@ -286,7 +278,7 @@ const SubtitleTranslator = () => {
         </Select>
         <span>目标语言：</span>
         <Select value={targetLanguage} onChange={handleTargetLanguageChange} style={{ width: "200px" }}>
-          {languageOptions.map((option) => (
+          {languages.map((option) => (
             <Option key={option.value} value={option.value}>
               {option.label}
             </Option>
