@@ -10,6 +10,10 @@ interface TranslateTextParams {
 
 export const translateText = async ({ text, translationMethod, targetLanguage, sourceLanguage, apiKey }: TranslateTextParams): Promise<string | null> => {
   try {
+    // 如果文本为空或源语言和目标语言相同，则直接返回原文
+    if (text.trim() === "" || sourceLanguage === targetLanguage) {
+      return text;
+    }
     switch (translationMethod) {
       case "google": {
         const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
