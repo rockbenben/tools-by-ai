@@ -40,7 +40,7 @@ const TextProcessingTool = () => {
   };
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <>
       <Title level={3} style={{ marginBottom: "24px" }}>
         批量文本处理
       </Title>
@@ -54,7 +54,7 @@ const TextProcessingTool = () => {
         <Radio value="weightUpdater">权重更新工具</Radio>
       </Radio.Group>
       {renderTool()}
-    </div>
+    </>
   );
 };
 

@@ -93,7 +93,7 @@ const FlareDataPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <>
       <Title level={2}>Flare 书签解析工具</Title>
       <Paragraph>用于将书签数据转换为 Flare 的格式。您可以选择“App”模式以解析应用列表，或“Bookmark”模式以解析书签列表，并可实现 app 和 bookmarks 间的互相转换。</Paragraph>
 
@@ -130,7 +130,7 @@ const FlareDataPage = () => {
           </CopyToClipboard>
         </Col>
       </Row>
-    </div>
+    </>
   );
 };
 

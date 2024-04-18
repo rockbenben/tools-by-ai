@@ -68,7 +68,7 @@ const TextSplitter = () => {
   };
 
   return (
-    <div style={{ maxWidth: "1500px", margin: "0 auto", padding: "24px" }}>
+    <>
       <Row justify="center">
         <Col xs={24} sm={24} md={20} lg={18} xl={16} xxl={14}>
           <Title level={3}>文本分割器</Title>
@@ -121,7 +121,7 @@ const TextSplitter = () => {
           </div>
         </Col>
       </Row>
-    </div>
+    </>
   );
 };
 export default TextSplitter;

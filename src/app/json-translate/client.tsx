@@ -141,7 +141,7 @@ const JsonTranslate = () => {
 
   const [ellipsis, setEllipsis] = useState(true);
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <>
       <Title level={3} style={{ marginBottom: "24px" }}>
         多语言 JSON 翻译工具
       </Title>
@@ -207,7 +207,7 @@ const JsonTranslate = () => {
           </Card>
         </Col>
       </Row>
-    </div>
+    </>
   );
 };
 

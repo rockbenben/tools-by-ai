@@ -133,7 +133,7 @@ const AIShortTranslate = () => {
 
   const [ellipsis, setEllipsis] = useState(true);
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <>
       <Title level={3} style={{ marginBottom: "24px" }}>
         ChatGPT Shortcut 定制翻译工具
       </Title>
@@ -174,7 +174,7 @@ const AIShortTranslate = () => {
           </Card>
         </Col>
       </Row>
-    </div>
+    </>
   );
 };
 

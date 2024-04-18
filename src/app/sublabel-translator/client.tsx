@@ -210,7 +210,7 @@ const SubtitleTranslator = () => {
   };
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
+    <>
       <Title level={3} style={{ marginBottom: "24px" }}>
         字幕翻译
       </Title>
@@ -310,7 +310,7 @@ const SubtitleTranslator = () => {
           <TextArea readOnly value={translatedText} rows={10} style={{ width: "100%", marginBottom: "16px" }} />
         </>
       )}
-    </div>
+    </>
   );
 };
 
