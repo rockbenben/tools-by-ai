@@ -1,9 +1,9 @@
 import React from "react";
-import Script from "next/script";
 import "./globals.css";
 import { Navigation } from "./ui/Navigation";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import ClientScripts from "./ClientScripts";
+import { GoogleTagManager } from "@next/third-parties/google";
+import AdsenseAd from "./AdSense";
 
 import type { Metadata } from "next";
 
@@ -16,16 +16,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-Hans">
+      <GoogleTagManager gtmId="GTM-WBM6XHGB" />
       <body>
         <Navigation />
-        <ClientScripts />
         <AntdRegistry>
           <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
             {children}
-            <ins className="adsbygoogle" style={{ display: "block" }} data-ad-client="ca-pub-7585955822109216" data-ad-slot="3744254915" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <AdsenseAd />
           </div>
         </AntdRegistry>
-        <Script src="https://oss.newzone.top/instantpage.min.js" type="module" strategy="lazyOnload" />
       </body>
     </html>
   );
