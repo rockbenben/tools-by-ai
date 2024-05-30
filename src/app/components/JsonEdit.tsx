@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Form, Input, message, Typography, Card, Space, Checkbox } from "antd";
 import { JSONPath } from "jsonpath-plus";
+import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonEdit = () => {
@@ -56,9 +57,9 @@ const JsonEdit = () => {
 
     let jsonObject;
     try {
-      jsonObject = JSON.parse(jsonInput);
+      jsonObject = preprocessJson(jsonInput);
     } catch (error) {
-      message.error("JSON Input 格式错误");
+      message.error("JSON Input 格式错误或无法处理");
       return;
     }
 

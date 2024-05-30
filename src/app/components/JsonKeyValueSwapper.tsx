@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Flex, Input, Typography, Button, message } from "antd";
-import { preprocessJson } from "./preprocessJson";
 import { CopyOutlined } from "@ant-design/icons";
+import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonKeyValueSwapper = () => {

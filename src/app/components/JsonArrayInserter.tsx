@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Input, Button, Typography, message, Row, Col } from "antd";
+import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonArrayInserter = () => {
@@ -14,11 +15,12 @@ const JsonArrayInserter = () => {
       if (!node1) throw new Error("请输入要插入位置的节点名称");
       if (!insertNode) throw new Error("请输入要插入的新节点名称");
 
-      let json;
+      let jsonObject;
       try {
-        json = JSON.parse(jsonInput);
-      } catch {
-        throw new Error("输入的 JSON 数据格式不正确");
+        jsonObject = preprocessJson(jsonInput);
+      } catch (error) {
+        message.error("JSON Input 格式错误或无法处理");
+        return;
       }
 
       const insertNodes = insertNode.split(/[，,]/); // Split by Chinese and English comma
@@ -47,14 +49,14 @@ const JsonArrayInserter = () => {
         }
       };
 
-      json = processNode(json);
+      jsonObject = processNode(jsonObject);
 
       if (!node1Found) throw new Error("找不到指定的节点名称");
 
-      const result = JSON.stringify(json, null, 2);
+      const result = JSON.stringify(jsonObject, null, 2);
 
       setResult(result);
-      message.success(`处理成功，共处理了${Object.keys(json).length}个条目。`);
+      message.success(`处理成功，共处理了${Object.keys(jsonObject).length}个条目。`);
     } catch (err) {
       message.error(err.message);
     }

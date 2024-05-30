@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input, Button, Typography, Row, Col, message } from "antd";
 import { JSONPath } from "jsonpath-plus";
+import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonTextProcessor = () => {
@@ -27,7 +28,13 @@ const JsonTextProcessor = () => {
       if (!jsonInput) throw new Error("请输入 JSON 数据");
       if (!node1 && !node2) throw new Error("请至少输入一个节点");
 
-      const jsonObject = JSON.parse(jsonInput);
+      let jsonObject;
+      try {
+        jsonObject = preprocessJson(jsonInput);
+      } catch (error) {
+        message.error("JSON Input 格式错误或无法处理");
+        return;
+      }
 
       const result1 = processNode(node1, prefixText1, suffixText1, jsonObject);
       const result2 = processNode(node2, prefixText2, suffixText2, jsonObject);
