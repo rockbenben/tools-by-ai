@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Tooltip, Form, Typography, Input, Select, message, Card, Space, Spin } from "antd";
 import { JSONPath } from "jsonpath-plus";
 import KeyMappingInput from "../components/KeyMappingInput";
@@ -12,17 +12,58 @@ import { copyToClipboard } from "@/app/components/copyToClipboard";
 const { Title, Paragraph } = Typography;
 
 const JsonTranslate = () => {
-  const [apiKey, setApiKey] = useState<string>("");
+  const [apiKeyDeepl, setApiKeyDeepl] = useState<string>("");
+  const [apiKeyGoogleTranslate, setApiKeyGoogleTranslate] = useState<string>("");
   const [translationMethod, setTranslationMethod] = useState<string>("deeplx");
   const [sourceLanguage, setSourceLanguage] = useState<string>("en");
   const [targetLanguage, setTargetLanguage] = useState<string>("zh");
-  const [showSimpleInput, setShowSimpleInput] = useState(true);
-  const [simpleInputKey, setSimpleInputKey] = useState("");
+  const [showSimpleInput, setShowSimpleInput] = useState<boolean>(true);
+  const [simpleInputKey, setSimpleInputKey] = useState<string>("");
   const [keyMappings, setKeyMappings] = useState<Array<{ inputKey: string; outputKey: string }>>([{ inputKey: "", outputKey: "" }]);
 
   const [jsonInput, setJsonInput] = useState("");
   const [jsonOutput, setJsonOutput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Load initial state from localStorage
+  useEffect(() => {
+    const loadFromLocalStorage = (key, setState, parseJson = false) => {
+      const storedValue = localStorage.getItem(key);
+      if (storedValue) {
+        setState(parseJson ? JSON.parse(storedValue) : storedValue);
+      }
+    };
+
+    loadFromLocalStorage("apiKeyDeepl", setApiKeyDeepl);
+    loadFromLocalStorage("apiKeyGoogleTranslate", setApiKeyGoogleTranslate);
+    loadFromLocalStorage("translationMethod", setTranslationMethod);
+    loadFromLocalStorage("sourceLanguage", setSourceLanguage);
+    loadFromLocalStorage("targetLanguage", setTargetLanguage);
+    loadFromLocalStorage("showSimpleInput", setShowSimpleInput, true);
+    loadFromLocalStorage("simpleInputKey", setSimpleInputKey);
+    loadFromLocalStorage("keyMappings", setKeyMappings, true);
+
+    setIsClient(true); // Indicate that the client-side is loaded
+  }, []);
+
+  // Update localStorage when state changes
+  useEffect(() => {
+    if (isClient) {
+      const saveToLocalStorage = (key, value) => {
+        localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+      };
+
+      saveToLocalStorage("apiKeyDeepl", apiKeyDeepl);
+      saveToLocalStorage("apiKeyGoogleTranslate", apiKeyGoogleTranslate);
+      saveToLocalStorage("translationMethod", translationMethod);
+      saveToLocalStorage("sourceLanguage", sourceLanguage);
+      saveToLocalStorage("targetLanguage", targetLanguage);
+      saveToLocalStorage("showSimpleInput", showSimpleInput);
+      saveToLocalStorage("simpleInputKey", simpleInputKey);
+      saveToLocalStorage("keyMappings", keyMappings);
+    }
+  }, [apiKeyDeepl, apiKeyGoogleTranslate, translationMethod, sourceLanguage, targetLanguage, showSimpleInput, simpleInputKey, keyMappings, isClient]);
 
   const toggleInputType = () => {
     setShowSimpleInput(!showSimpleInput);
@@ -33,12 +74,28 @@ const JsonTranslate = () => {
     setJsonInput(input);
   };
 
+  const handleSourceLanguageChange = (value) => {
+    if (value === targetLanguage) {
+      message.error("源语言和目标语言不能相同");
+      return;
+    }
+    setSourceLanguage(value);
+  };
+
+  const handleTargetLanguageChange = (value) => {
+    if (value === sourceLanguage) {
+      message.error("目标语言和源语言不能相同");
+      return;
+    }
+    setTargetLanguage(value);
+  };
+
   const handleTranslate = async () => {
     // Reset Output
     setJsonOutput("");
 
     // Check Input
-    if (!apiKey && translationMethod !== "deeplx") {
+    if ((translationMethod === "deepl" && !apiKeyDeepl) || (translationMethod === "google" && !apiKeyGoogleTranslate)) {
       message.error("Google/DeepL 翻译方法中，API Key 不能为空。没有 API 的话，可以使用 DeepLX 免费翻译。");
       return;
     }
@@ -96,14 +153,18 @@ const JsonTranslate = () => {
         }
 
         const tasks = inputNodes.map(async (node, index) => {
-          const translatedText = await translateText({
-            text: node.value,
-            translationMethod,
-            targetLanguage,
-            sourceLanguage,
-            apiKey,
-          });
-          applyTranslation(jsonObject, outputNodes[index].path, translatedText);
+          try {
+            const translatedText = await translateText({
+              text: node.value,
+              translationMethod,
+              targetLanguage,
+              sourceLanguage,
+              apiKey: translationMethod === "deepl" ? apiKeyDeepl : apiKeyGoogleTranslate,
+            });
+            applyTranslation(jsonObject, outputNodes[index].path, translatedText);
+          } catch (error) {
+            throw new Error(`在翻译文本时出错: ${error.message}`);
+          }
         });
 
         await Promise.all(tasks);
@@ -141,7 +202,7 @@ const JsonTranslate = () => {
         <br />
         了解更多：<a href="https://newzone.top/apps/devdocs/json-translate.html">使用教程</a>；
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
-        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。
+        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
       </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
@@ -149,16 +210,22 @@ const JsonTranslate = () => {
             <Form.Item label="翻译 API">
               <Select value={translationMethod} onChange={(value) => setTranslationMethod(value)} options={translationMethods} />
             </Form.Item>
-            <Form.Item>
-              <Input placeholder="Google/DeepL Translate API Key" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-            </Form.Item>
+            {translationMethod === "deepl" && (
+              <Form.Item>
+                <Input placeholder="DeepL API Key" value={apiKeyDeepl} onChange={(e) => setApiKeyDeepl(e.target.value)} />
+              </Form.Item>
+            )}
+            {translationMethod === "google" && (
+              <Form.Item>
+                <Input placeholder="Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => setApiKeyGoogleTranslate(e.target.value)} />
+              </Form.Item>
+            )}
             <Space style={{ display: "flex" }} align="baseline">
               <Form.Item label="源语言">
-                <Select value={sourceLanguage} onChange={(value) => setSourceLanguage(value)} options={languages} />
+                <Select value={sourceLanguage} onChange={handleSourceLanguageChange} options={languages} style={{ width: "150px" }} />
               </Form.Item>
-
               <Form.Item label="目标语言">
-                <Select value={targetLanguage} onChange={(value) => setTargetLanguage(value)} options={languages} />
+                <Select value={targetLanguage} onChange={handleTargetLanguageChange} options={languages} style={{ width: "150px" }} />
               </Form.Item>
             </Space>
 

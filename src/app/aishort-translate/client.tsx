@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Typography, Input, message, Card, Spin } from "antd";
 import { JSONPath } from "jsonpath-plus";
 import { translateText } from "../components/translateText";
@@ -11,8 +11,26 @@ import { copyToClipboard } from "@/app/components/copyToClipboard";
 const { Title, Paragraph } = Typography;
 
 const AIShortTranslate = () => {
-  const [googleApi, setGoogleApi] = useState<string>("");
-  const [deeplKey, setDeeplKey] = useState<string>("");
+  const [apiKeyGoogleTranslate, setApiKeyGoogleTranslate] = useState<string>("");
+  const [apiKeyDeepl, setApiKeyDeepl] = useState<string>("");
+
+  // 在组件加载时读取 API 密钥
+  useEffect(() => {
+    setApiKeyGoogleTranslate(localStorage.getItem("apiKeyGoogleTranslate") || "");
+    setApiKeyDeepl(localStorage.getItem("apiKeyDeepl") || "");
+  }, []);
+
+  const handleapiKeyGoogleTranslateChange = (event) => {
+    const { value } = event.target;
+    setApiKeyGoogleTranslate(value);
+    localStorage.setItem("apiKeyGoogleTranslate", value);
+  };
+
+  const handleapiKeyDeeplChange = (event) => {
+    const { value } = event.target;
+    setApiKeyDeepl(value);
+    localStorage.setItem("apiKeyDeepl", value);
+  };
 
   const [jsonInput, setJsonInput] = useState("");
   const [jsonOutput, setJsonOutput] = useState("");
@@ -35,15 +53,15 @@ const AIShortTranslate = () => {
     currentNode[outputNodePathArray[outputNodePathArray.length - 1]] = translatedText;
   };
 
-  function getApiKeyAndMethod(langKey) {
+  const getApiKeyAndMethod = (langKey) => {
     const preferredMethod = languages.find((lang) => lang.value === langKey)?.firstChoice;
-    if (preferredMethod === "google" && googleApi) {
-      return { method: "google", key: googleApi };
-    } else if (preferredMethod === "deepl" && deeplKey) {
-      return { method: "deepl", key: deeplKey };
+    if (preferredMethod === "google" && apiKeyGoogleTranslate) {
+      return { method: "google", key: apiKeyGoogleTranslate };
+    } else if (preferredMethod === "deepl" && apiKeyDeepl) {
+      return { method: "deepl", key: apiKeyDeepl };
     }
     return { method: "deeplx", key: "" }; // Default to deeplx if no key is available
-  }
+  };
 
   const translateData = async (jsonData) => {
     const promises = [];
@@ -121,27 +139,26 @@ const AIShortTranslate = () => {
     }
   };
 
-  const [ellipsis, setEllipsis] = useState(true);
   return (
     <>
       <Title level={3} style={{ marginBottom: "24px" }}>
         ChatGPT Shortcut 定制翻译工具
       </Title>
-      <Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }} ellipsis={ellipsis ? { rows: 3, expandable: true, symbol: "more" } : false}>
+      <Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }} ellipsis={{ rows: 3, expandable: true, symbol: "more" }}>
         专为 ChatGPT Shortcut 的 prompt.json 数据结构设计的翻译工具，支持一键快捷翻译 13 种语言，操作简便，无需额外配置。对于印地语和孟加拉语，该工具默认使用 Google Translate
         进行翻译。对于其他语言，则优先选用 DeepL 作为翻译服务。在用户未提供 Google Translate 或 DeepL 的 API 密钥的情况下，系统会自动切换到
         DeepLX，这是一个无需费用的翻译服务，保证基本的翻译需求得到满足。API：
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
-        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。
+        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
       </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title="输入区">
             <Form.Item label="Google Translate">
-              <Input placeholder="不含印地语、孟加拉语可空，不填则使用 DeepL" value={googleApi} onChange={(e) => setGoogleApi(e.target.value)} />
+              <Input placeholder="不含印地语、孟加拉语可空，不填则使用 DeepL" value={apiKeyGoogleTranslate} onChange={handleapiKeyGoogleTranslateChange} />
             </Form.Item>
-            <Form.Item label="DeepL Translate">
-              <Input placeholder="不填则使用 DeepLx" value={deeplKey} onChange={(e) => setDeeplKey(e.target.value)} />
+            <Form.Item label="DeepL API Key">
+              <Input placeholder="不填则使用 DeepLx" value={apiKeyDeepl} onChange={handleapiKeyDeeplChange} />
             </Form.Item>
             <Input.TextArea placeholder="JSON Input，输入要翻译的 JSON" value={jsonInput} onChange={handleJsonInputChange} rows={10} />
           </Card>

@@ -1,7 +1,7 @@
 export const translationMethods = [
   { value: "google", label: "Google Translate" },
   { value: "deepl", label: "DeepL" },
-  { value: "deeplx", label: "DeepLX（免费，无需填 API）" },
+  { value: "deeplx", label: "DeepLX（免费）" },
 ];
 
 export type LanguageOption = {
