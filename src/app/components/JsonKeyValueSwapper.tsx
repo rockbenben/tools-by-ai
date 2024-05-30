@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Flex, Input, Typography, Button, message } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
-import { CopyToClipboard } from "react-copy-to-clipboard";
 import { preprocessJson } from "./preprocessJson";
+import { CopyOutlined } from "@ant-design/icons";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonKeyValueSwapper = () => {
   const [jsonInput, setJsonInput] = useState("");
@@ -58,9 +58,9 @@ const JsonKeyValueSwapper = () => {
         <Button type="primary" onClick={swapValues}>
           互换键值
         </Button>
-        <CopyToClipboard text={swappedJson} onCopy={() => message.success("结果已复制到剪贴板")}>
-          <Button icon={<CopyOutlined />}>复制结果</Button>
-        </CopyToClipboard>
+        <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(swappedJson)}>
+          复制结果
+        </Button>
       </Flex>
       <pre>{swappedJson}</pre>
     </Flex>

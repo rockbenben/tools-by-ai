@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input, Button, Typography, Row, Col, message } from "antd";
 import { JSONPath } from "jsonpath-plus";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonTextProcessor = () => {
   const [jsonInput, setJsonInput] = useState("");
@@ -41,12 +42,6 @@ const JsonTextProcessor = () => {
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result).then(() => {
-      message.success("复制成功！");
-    });
-  };
-
   return (
     <>
       <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
@@ -64,7 +59,7 @@ const JsonTextProcessor = () => {
           <Input placeholder="前缀文本2" value={prefixText2} onChange={(e) => setPrefixText2(e.target.value)} style={{ marginBottom: "10px" }} />
           <Input placeholder="后缀文本2" value={suffixText2} onChange={(e) => setSuffixText2(e.target.value)} style={{ marginBottom: "10px" }} />
           <Button onClick={handleProcess}>处理</Button>
-          <Button onClick={handleCopy} style={{ marginLeft: "10px" }}>
+          <Button onClick={() => copyToClipboard(result)} style={{ marginLeft: "10px" }}>
             复制结果
           </Button>
         </Col>

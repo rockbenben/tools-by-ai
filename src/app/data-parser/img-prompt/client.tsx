@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Flex, Typography, Input, Button, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
 const IMGPromptJsonCreator = () => {
@@ -29,7 +29,7 @@ const IMGPromptJsonCreator = () => {
     <Flex gap="small" vertical>
       <Title level={2}>IMGPrompt 数据转换器</Title>
       <Paragraph>
-        本工具用于批量生成 IMGPrompt 数据。用户可以通过输入特定格式的文本（例如：显示名称与语言名称，用制表符分隔，即「displayName langName」）以及指定的对象和属性， 来快速生成 JSON 格式的数据。
+        本工具用于批量生成 IMGPrompt 数据。用户可以通过输入特定格式的文本（例如：显示名称与语言名称，用制表符分隔，即「displayName langName」）以及指定的对象和属性，来快速生成 JSON 格式的数据。
       </Paragraph>
       <Flex gap="small">
         <Input placeholder="对象 object" value={object} onChange={handleObjectChange} />
@@ -40,9 +40,9 @@ const IMGPromptJsonCreator = () => {
         <Button type="primary" onClick={generateJson}>
           生成 JSON
         </Button>
-        <CopyToClipboard text={JSON.stringify(jsonOutput, null, 2)} onCopy={() => message.success("结果已复制到剪贴板")}>
-          <Button icon={<CopyOutlined />}>复制结果</Button>
-        </CopyToClipboard>
+        <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(JSON.stringify(jsonOutput, null, 2))}>
+          复制结果
+        </Button>
       </Flex>
       <pre>{JSON.stringify(jsonOutput, null, 2)}</pre>
     </Flex>

@@ -7,6 +7,7 @@ import KeyMappingInput from "../components/KeyMappingInput";
 import { preprocessJson } from "../components/preprocessJson";
 import { translateText } from "../components/translateText";
 import { translationMethods, languages } from "../components/transalteConstants";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
 
@@ -128,17 +129,6 @@ const JsonTranslate = () => {
     currentNode[outputNodePathArray[outputNodePathArray.length - 1]] = translatedText;
   };
 
-  const handleCopyResult = () => {
-    navigator.clipboard.writeText(jsonOutput).then(
-      () => {
-        message.success("翻译结果已复制到剪贴板");
-      },
-      (err) => {
-        message.error("无法复制翻译内容，请手动复制");
-      }
-    );
-  };
-
   const [ellipsis, setEllipsis] = useState(true);
   return (
     <>
@@ -192,7 +182,7 @@ const JsonTranslate = () => {
                 onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#1890ff")}>
                 开始翻译
               </Button>
-              <Button onClick={handleCopyResult} style={{ marginLeft: "16px", marginRight: "16px", marginBottom: "16px" }}>
+              <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginRight: "16px", marginBottom: "16px" }}>
                 复制翻译结果
               </Button>
               <Button onClick={toggleInputType} style={{ backgroundColor: "#f5f5f5", color: "rgba(0, 0, 0, 0.65)" }}>

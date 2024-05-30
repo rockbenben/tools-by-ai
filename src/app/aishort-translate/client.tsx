@@ -6,6 +6,7 @@ import { JSONPath } from "jsonpath-plus";
 import { translateText } from "../components/translateText";
 import { preprocessJson } from "../components/preprocessJson";
 import { languages, isValidLanguageValue } from "../components/transalteConstants";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
 
@@ -120,17 +121,6 @@ const AIShortTranslate = () => {
     }
   };
 
-  const handleCopyResult = () => {
-    navigator.clipboard.writeText(jsonOutput).then(
-      () => {
-        message.success("翻译结果已复制到剪贴板");
-      },
-      (err) => {
-        message.error("无法复制翻译内容，请手动复制");
-      }
-    );
-  };
-
   const [ellipsis, setEllipsis] = useState(true);
   return (
     <>
@@ -166,7 +156,7 @@ const AIShortTranslate = () => {
                 onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#1890ff")}>
                 开始翻译
               </Button>
-              <Button onClick={handleCopyResult} style={{ marginLeft: "16px", marginRight: "16px", marginBottom: "16px" }}>
+              <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginRight: "16px", marginBottom: "16px" }}>
                 复制翻译结果
               </Button>
               <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />

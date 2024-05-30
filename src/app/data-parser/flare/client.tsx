@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button, Typography, Row, Col, message, Radio, Flex } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import { CopyToClipboard } from "react-copy-to-clipboard";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { TextArea } = Input;
 const { Text, Title, Paragraph } = Typography;
@@ -123,11 +123,9 @@ const FlareDataPage = () => {
         <Col span={12}>
           <Text type="secondary">输出结果：</Text>
           <TextArea rows={8} value={outputData} readOnly />
-          <CopyToClipboard text={outputData} onCopy={() => message.success("结果已复制到剪贴板")}>
-            <Button icon={<CopyOutlined />} style={{ margin: "10px 0" }}>
-              复制结果
-            </Button>
-          </CopyToClipboard>
+          <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(outputData)} style={{ margin: "10px 0" }}>
+            复制结果
+          </Button>
         </Col>
       </Row>
     </>

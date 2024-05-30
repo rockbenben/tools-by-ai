@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Input, Button, Typography, message, Row, Col, Space } from "antd";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonWeightUpdater = () => {
   const [jsonInput, setJsonInput] = useState("");
@@ -42,12 +43,6 @@ const JsonWeightUpdater = () => {
     }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result).then(() => {
-      message.success("结果已复制到剪贴板。");
-    });
-  };
-
   return (
     <>
       <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
@@ -73,7 +68,7 @@ const JsonWeightUpdater = () => {
           <Button onClick={handleUpdate} style={{ marginRight: "10px" }}>
             更新
           </Button>
-          <Button onClick={handleCopy}>复制结果</Button>
+          <Button onClick={() => copyToClipboard(result)}>复制结果</Button>
         </Col>
       </Row>
       <Row style={{ marginTop: "10px" }}>

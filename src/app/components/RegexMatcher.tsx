@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input, Button, Typography, message, Row, Col } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { TextArea } = Input;
 
@@ -13,17 +14,6 @@ const RegexMatcher = () => {
     const regexObj = new RegExp(regex, "g");
     const matches = text.match(regexObj);
     setResult(matches.join("\n"));
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result).then(
-      () => {
-        message.success("结果已复制到剪贴板");
-      },
-      (err) => {
-        message.error("无法复制结果，请手动复制");
-      }
-    );
   };
 
   return (
@@ -40,7 +30,7 @@ const RegexMatcher = () => {
           <Button onClick={handleMatch} style={{ marginTop: "10px" }}>
             匹配
           </Button>
-          <Button icon={<CopyOutlined />} onClick={handleCopy} style={{ marginTop: "10px", marginLeft: "10px" }}>
+          <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(result)} style={{ marginTop: "10px", marginLeft: "10px" }}>
             复制结果
           </Button>
         </Col>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Form, Typography, Input, message, Card } from "antd";
 import { JSONPath } from "jsonpath-plus";
 import KeyMappingInput from "./KeyMappingInput";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonValueTransformer = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
@@ -73,17 +74,6 @@ const JsonValueTransformer = () => {
     });
   };
 
-  const handleCopyResult = () => {
-    navigator.clipboard.writeText(jsonOutput).then(
-      () => {
-        message.success("结果已复制到剪贴板");
-      },
-      (err) => {
-        message.error("无法复制结果，请手动复制");
-      }
-    );
-  };
-
   const toggleUsePreset = () => {
     if (isPresetUsed) {
       setIsPresetUsed(false);
@@ -115,7 +105,7 @@ const JsonValueTransformer = () => {
             <Button onClick={handleEdit} style={{ marginBottom: "16px" }}>
               Edit Json
             </Button>
-            <Button onClick={handleCopyResult} style={{ marginLeft: "16px", marginBottom: "16px" }}>
+            <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginBottom: "16px" }}>
               Copy Result
             </Button>
             <Form.Item>

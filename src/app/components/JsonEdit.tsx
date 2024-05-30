@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Form, Input, message, Typography, Card, Space, Checkbox } from "antd";
 import { JSONPath } from "jsonpath-plus";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonEdit = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
@@ -90,17 +91,6 @@ const JsonEdit = () => {
     setJsonOutput(JSON.stringify(jsonObject, null, 2));
   };
 
-  const handleCopyResult = () => {
-    navigator.clipboard.writeText(jsonOutput).then(
-      () => {
-        message.success("结果已复制到剪贴板");
-      },
-      (err) => {
-        message.error("无法复制结果，请手动复制");
-      }
-    );
-  };
-
   return (
     <>
       <Typography.Paragraph type="secondary" style={{ fontSize: "14px" }}>
@@ -141,7 +131,7 @@ const JsonEdit = () => {
             <Button onClick={handleEdit} style={{ marginBottom: "16px" }}>
               Edit JSON
             </Button>
-            <Button onClick={handleCopyResult} style={{ marginLeft: "16px", marginBottom: "16px" }}>
+            <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginBottom: "16px" }}>
               Copy Result
             </Button>
             <Form.Item>

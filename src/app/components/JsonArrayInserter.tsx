@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Input, Button, Typography, message, Row, Col } from "antd";
+import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const JsonArrayInserter = () => {
   const [jsonInput, setJsonInput] = useState("");
@@ -59,12 +60,6 @@ const JsonArrayInserter = () => {
     }
   };
 
-  const handleCopyClick = () => {
-    navigator.clipboard.writeText(result).then(() => {
-      message.success("结果已复制到剪贴板。");
-    });
-  };
-
   return (
     <>
       <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
@@ -81,7 +76,7 @@ const JsonArrayInserter = () => {
           <Button onClick={handleInsert} style={{ marginTop: "10px" }}>
             插入
           </Button>
-          <Button onClick={handleCopyClick} style={{ marginTop: "10px", marginLeft: "10px" }}>
+          <Button onClick={() => copyToClipboard(result)} style={{ marginTop: "10px", marginLeft: "10px" }}>
             复制结果
           </Button>
         </Col>
