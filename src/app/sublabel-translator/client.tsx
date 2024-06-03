@@ -55,7 +55,7 @@ const SubtitleTranslator = () => {
       saveToLocalStorage("sourceLanguage", sourceLanguage);
       saveToLocalStorage("targetLanguage", targetLanguage);
     }
-  }, [translationMethod, apiKeyDeepl, apiKeyGoogleTranslate, sourceLanguage, targetLanguage]);
+  }, [translationMethod, apiKeyDeepl, apiKeyGoogleTranslate, sourceLanguage, targetLanguage, isClient]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -261,7 +261,7 @@ const SubtitleTranslator = () => {
         字幕翻译工具
       </Title>
       <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
-        本工具支持 .srt 字幕文件的翻译，支持单文件和多文件翻译。请上传或粘贴字幕文件，选择翻译语言和翻译方法，然后点击翻译按钮。翻译结果将会显示在下方，您可以复制或导出字幕文件。 了解更多：
+        本工具支持 .srt 字幕文件的翻译，支持单文件和多文件翻译。请上传或粘贴字幕文件，选择翻译语言和翻译方法，然后点击翻译按钮。翻译结果将会显示在下方，您可以复制或导出字幕文件。了解更多：
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
         <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
       </Typography.Paragraph>
