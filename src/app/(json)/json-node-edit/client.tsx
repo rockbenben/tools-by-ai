@@ -37,25 +37,28 @@ const ClientPage = () => {
 
   const handleInputChange = useCallback((setter) => (e) => setter(e.target.value), []);
 
-  const applyPrefixSuffix = (value, path) => {
-    let newValue = value;
+  const applyPrefixSuffix = useCallback(
+    (value, path) => {
+      let newValue = value;
 
-    if (isVariableReplace) {
-      const matchedLang = Object.keys(languages).find((lang) => path.includes(lang));
-      if (matchedLang) {
-        newValue = newValue.replaceAll(findText, languages[matchedLang]);
+      if (isVariableReplace) {
+        const matchedLang = Object.keys(languages).find((lang) => path.includes(lang));
+        if (matchedLang) {
+          newValue = newValue.replaceAll(findText, languages[matchedLang]);
+        }
+      } else if (findText) {
+        newValue = newValue.replaceAll(findText, replaceText);
       }
-    } else if (findText) {
-      newValue = newValue.replaceAll(findText, replaceText);
-    }
 
-    if (prefix) newValue = prefix + newValue;
-    if (suffix) newValue = newValue + suffix;
+      if (prefix) newValue = prefix + newValue;
+      if (suffix) newValue = newValue + suffix;
 
-    return newValue;
-  };
+      return newValue;
+    },
+    [findText, replaceText, prefix, suffix, isVariableReplace]
+  );
 
-  const handleEdit = useCallback(() => {
+  const handleEdit = () => {
     if (!jsonInput) {
       message.error("JSON Input 不能为空");
       return;
@@ -94,14 +97,13 @@ const ClientPage = () => {
     });
 
     setJsonOutput(JSON.stringify(jsonObject, null, 2));
-  }, [jsonInput, jsonPath, findText, replaceText, prefix, suffix, isVariableReplace]);
+  };
 
   return (
     <>
       <Title level={2}>JSON 节点批量编辑</Title>
       <Paragraph type="secondary">
-        在 JSON
-        中查找节点并编辑它们的值，你可以为找到的节点的值添加前缀、后缀或进行替换操作。节点的查找支持批量操作，可以使用逗号来分割节点。请注意，本工具只支持第一层的子键，不支持嵌套子键内的键名互换。
+        在 JSON 中查找节点并编辑它们的值，你可以为找到的节点的值添加前缀、后缀或进行替换操作。节点的查找支持批量操作，可以使用逗号来分割节点。键名支持 zh.title 等嵌套节点。
       </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
