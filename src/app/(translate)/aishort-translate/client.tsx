@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Typography, Input, message, Card, Spin } from "antd";
 import { JSONPath } from "jsonpath-plus";
-import { translateText } from "../components/translateText";
-import { preprocessJson } from "../components/preprocessJson";
-import { languages, isValidLanguageValue } from "../components/transalteConstants";
+import { translateText } from "@/app/components/translateText";
+import { preprocessJson } from "@/app/components/preprocessJson";
+import { languages, isValidLanguageValue } from "@/app/components/transalteConstants";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;

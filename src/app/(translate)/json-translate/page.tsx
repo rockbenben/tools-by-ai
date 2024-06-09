@@ -1,4 +1,4 @@
-import JsonTranslate from "./client";
+import ClientPage from "./client";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <JsonTranslate />;
+  return <ClientPage />;
 }

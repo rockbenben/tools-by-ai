@@ -27,12 +27,12 @@ export const preprocessJson = (input: string): any => {
     try {
       return JSON.parse(fixedInput);
     } catch (finalError) {
-      // 如果再次失败，尝试用[]包裹并解析
+      // 如果再次失败，尝试用 [] 包裹并解析
       try {
         return JSON.parse(`[${fixedInput}]`);
       } catch (wrapError) {
         // 详细的错误信息
-        throw new Error(`无效的 JSON 数据。初始错误: ${initialError.message}; 修复错误: ${finalError.message}; 包裹错误: ${wrapError.message}`);
+        throw new Error(`无效的 JSON 数据。初始错误：${initialError.message}; 修复错误：${finalError.message}; 包裹错误：${wrapError.message}`);
       }
     }
   }

@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Tooltip, Form, Typography, Input, Select, message, Card, Space, Spin } from "antd";
 import { JSONPath } from "jsonpath-plus";
-import KeyMappingInput from "../components/KeyMappingInput";
-import { preprocessJson } from "../components/preprocessJson";
-import { translateText } from "../components/translateText";
-import { translationMethods, languages } from "../components/transalteConstants";
+import KeyMappingInput from "@/app/components/KeyMappingInput";
+import { preprocessJson } from "@/app/components/preprocessJson";
+import { translateText } from "@/app/components/translateText";
+import { translationMethods, languages } from "@/app/components/transalteConstants";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
 
-const JsonTranslate = () => {
+const ClientPage = () => {
   const [apiKeyDeepl, setApiKeyDeepl] = useState<string>("");
   const [apiKeyGoogleTranslate, setApiKeyGoogleTranslate] = useState<string>("");
   const [translationMethod, setTranslationMethod] = useState<string>("deeplx");
@@ -163,7 +163,7 @@ const JsonTranslate = () => {
             });
             applyTranslation(jsonObject, outputNodes[index].path, translatedText);
           } catch (error) {
-            throw new Error(`在翻译文本时出错: ${error.message}`);
+            throw new Error(`在翻译文本时出错：${error.message}`);
           }
         });
 
@@ -193,10 +193,8 @@ const JsonTranslate = () => {
   const [ellipsis, setEllipsis] = useState(true);
   return (
     <>
-      <Title level={3} style={{ marginBottom: "24px" }}>
-        多语言 JSON 翻译工具
-      </Title>
-      <Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }} ellipsis={ellipsis ? { rows: 3, expandable: true, symbol: "more" } : false}>
+      <Title level={2}>多语言 JSON 翻译工具</Title>
+      <Paragraph type="secondary" ellipsis={ellipsis ? { rows: 3, expandable: true, symbol: "more" } : false}>
         JsonTranslate 是一款高效的多语言 JSON 翻译工具，专为开发者和内容创作者设计。支持 Google Translate、DeepL 和 DeepLX 翻译
         API，助力快速实现项目的国际化和本地化。无论你是在开发多语言网站、应用程序还是处理多语言数据集，JsonTranslate 都能提供简便的解决方案，轻松将 JSON 文件中的内容翻译为多种目标语言。
         <br />
@@ -268,4 +266,4 @@ const JsonTranslate = () => {
   );
 };
 
-export default JsonTranslate;
+export default ClientPage;

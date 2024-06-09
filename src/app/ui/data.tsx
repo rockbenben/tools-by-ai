@@ -1,8 +1,27 @@
 import Link from "next/link";
-import { BgColorsOutlined, DatabaseOutlined, ExperimentOutlined, ThunderboltOutlined } from "@ant-design/icons";
+import {
+  BgColorsOutlined,
+  DatabaseOutlined,
+  ExperimentOutlined,
+  ScissorOutlined,
+  FileTextOutlined,
+  CodeOutlined,
+  GlobalOutlined,
+  BookOutlined,
+  FileSearchOutlined,
+  EditOutlined,
+  SwapOutlined,
+  FileSyncOutlined,
+  NodeIndexOutlined,
+  VideoCameraOutlined,
+  TranslationOutlined,
+  LinkOutlined,
+  UnorderedListOutlined,
+  ProfileOutlined,
+} from "@ant-design/icons";
 
-export const DISCORD_LINK = "https://discord.gg/PZTQfJ4GjX";
 export const GITHUB_LINK = "https://github.com/rockbenben/tools-by-ai";
+export const DISCORD_LINK = "https://discord.gg/PZTQfJ4GjX";
 export const DISCORD_BADGE_SRC = "https://img.shields.io/discord/1048780149899939881?color=%2385c8c8&label=Discord&logo=discord&style=for-the-badge";
 
 export const MENU_ITEMS = [
@@ -11,39 +30,102 @@ export const MENU_ITEMS = [
     key: "/",
   },
   {
-    label: <Link href="/json-translate">i18n JSON 翻译</Link>,
-    key: "/json-translate",
-  },
-  {
-    label: <Link href="/json-edit">批量文本处理</Link>,
-    key: "/json-edit",
-  },
-  {
-    label: "数据解析工具",
-    key: "dataParser",
-    icon: <DatabaseOutlined />,
+    label: "多语言翻译",
+    key: "translate",
+    icon: <GlobalOutlined />,
     children: [
       {
-        label: <Link href="/data-parser/img-prompt">IMGPrompt 数据转换器</Link>,
-        key: "/data-parser/img-prompt",
+        label: <Link href="/json-translate">i18n JSON 翻译</Link>,
+        key: "/json-translate",
+        icon: <TranslationOutlined />,
       },
       {
-        label: <Link href="/data-parser/flare">Flare 书签解析工具</Link>,
-        key: "/data-parser/flare",
+        label: <Link href="/sublabel-translator">SRT 字幕翻译</Link>,
+        key: "/sublabel-translator",
+        icon: <VideoCameraOutlined />,
       },
       {
-        label: <Link href="/text-splitter">文本分割</Link>,
-        key: "/text-splitter",
+        label: <Link href="/aishort-translate">AIShort 多语言翻译</Link>,
+        key: "/aishort-translate",
+        icon: <GlobalOutlined />,
       },
     ],
   },
   {
-    label: <Link href="/aishort-translate">多语言一键翻译</Link>,
-    key: "/aishort-translate",
+    label: "文本处理",
+    key: "textParser",
+    icon: <FileTextOutlined />,
+    children: [
+      {
+        label: <Link href="/regex-matcher">正则匹配</Link>,
+        key: "/regex-matcher",
+        icon: <CodeOutlined />,
+      },
+      {
+        label: <Link href="/text-splitter">文本分割</Link>,
+        key: "/text-splitter",
+        icon: <ScissorOutlined />,
+      },
+      {
+        label: <Link href="/text-processor">多规则处理</Link>,
+        key: "/text-processor",
+        icon: <ProfileOutlined />,
+      },
+    ],
   },
   {
-    label: <Link href="/sublabel-translator">字幕翻译</Link>,
-    key: "/sublabel-translator",
+    label: "JSON 处理",
+    key: "jsonParser",
+    icon: <DatabaseOutlined />,
+    children: [
+      {
+        label: <Link href="/json-value-transformer">JSON 键值替换工具</Link>,
+        key: "/json-value-transformer",
+        icon: <FileSyncOutlined />,
+      },
+      {
+        label: <Link href="/json-value-swapper">JSON 键值互换工具</Link>,
+        key: "/json-value-swapper",
+        icon: <SwapOutlined />,
+      },
+      {
+        label: <Link href="/json-node-inserter">JSON 节点插入工具</Link>,
+        key: "/json-node-inserter",
+        icon: <NodeIndexOutlined />,
+      },
+      {
+        label: <Link href="/json-node-edit">JSON 节点批量编辑</Link>,
+        key: "/json-node-edit",
+        icon: <EditOutlined />,
+      },
+      {
+        label: <Link href="/json-value-extractor">JSON 值提取工具</Link>,
+        key: "/json-value-extractor",
+        icon: <FileSearchOutlined />,
+      },
+      {
+        label: <Link href="/json-match-update">JSON 数据匹配更新</Link>,
+        key: "/json-match-update",
+        icon: <UnorderedListOutlined />,
+      },
+    ],
+  },
+  {
+    label: "数据解析工具",
+    key: "dataParser",
+    icon: <FileSearchOutlined />,
+    children: [
+      {
+        label: <Link href="/data-parser/flare">Flare 书签解析工具</Link>,
+        key: "/data-parser/flare",
+        icon: <LinkOutlined />,
+      },
+      {
+        label: <Link href="/data-parser/img-prompt">IMGPrompt 数据转换器</Link>,
+        key: "/data-parser/img-prompt",
+        icon: <UnorderedListOutlined />,
+      },
+    ],
   },
   {
     label: (
@@ -70,6 +152,6 @@ export const MENU_ITEMS = [
       </a>
     ),
     key: "LearnData",
-    icon: <ThunderboltOutlined />,
+    icon: <BookOutlined />,
   },
 ];

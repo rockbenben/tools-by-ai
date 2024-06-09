@@ -7,7 +7,7 @@ import { copyToClipboard } from "@/app/components/copyToClipboard";
 const { TextArea } = Input;
 const { Text, Title, Paragraph } = Typography;
 
-const FlareDataPage = () => {
+const ClientPage = () => {
   const [inputData, setInputData] = useState("");
   const [outputData, setOutputData] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -95,8 +95,7 @@ const FlareDataPage = () => {
   return (
     <>
       <Title level={2}>Flare 书签解析工具</Title>
-      <Paragraph>用于将书签数据转换为 Flare 的格式。您可以选择“App”模式以解析应用列表，或“Bookmark”模式以解析书签列表，并可实现 app 和 bookmarks 间的互相转换。</Paragraph>
-
+      <Paragraph type="secondary">用于将书签数据转换为 Flare 的格式。您可以选择“App”模式以解析应用列表，或“Bookmark”模式以解析书签列表，并可实现 app 和 bookmarks 间的互相转换。</Paragraph>
       <Row gutter={16}>
         <Col span={12}>
           <Text type="secondary">输入书签：</Text>
@@ -132,4 +131,4 @@ const FlareDataPage = () => {
   );
 };
 
-export default FlareDataPage;
+export default ClientPage;

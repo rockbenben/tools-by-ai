@@ -1,36 +1,42 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { Row, Col, Button, Form, Typography, Input, message, Card } from "antd";
 import { JSONPath } from "jsonpath-plus";
 import KeyMappingInput from "@/app/components/KeyMappingInput";
 import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
-const JsonValueTransformer = () => {
+const { Title, Paragraph } = Typography;
+
+const defaultMappings = [
+  { inputKey: "en.prompt", outputKey: "ar.prompt" },
+  { inputKey: "en.prompt", outputKey: "bn.prompt" },
+  { inputKey: "en.prompt", outputKey: "de.prompt" },
+  { inputKey: "en.prompt", outputKey: "es.prompt" },
+  { inputKey: "en.prompt", outputKey: "fr.prompt" },
+  { inputKey: "en.prompt", outputKey: "hi.prompt" },
+  { inputKey: "en.prompt", outputKey: "it.prompt" },
+  { inputKey: "en.prompt", outputKey: "ja.prompt" },
+  { inputKey: "en.prompt", outputKey: "ko.prompt" },
+  { inputKey: "en.prompt", outputKey: "pt.prompt" },
+  { inputKey: "en.prompt", outputKey: "ru.prompt" },
+];
+
+const ClientPage = () => {
   const [jsonInput, setJsonInput] = useState<string>("");
-  const [jsonOutput, setJsonOutput] = useState<any>({});
+  const [jsonOutput, setJsonOutput] = useState<string>("");
   const [isPresetUsed, setIsPresetUsed] = useState<boolean>(false);
+  const [keyMappings, setKeyMappings] = useState<Array<{ inputKey: string; outputKey: string; id: number }>>([{ inputKey: "", outputKey: "", id: 0 }]);
 
-  const defaultMappings = [
-    { inputKey: "en.prompt", outputKey: "ar.prompt" },
-    { inputKey: "en.prompt", outputKey: "bn.prompt" },
-    { inputKey: "en.prompt", outputKey: "de.prompt" },
-    { inputKey: "en.prompt", outputKey: "es.prompt" },
-    { inputKey: "en.prompt", outputKey: "fr.prompt" },
-    { inputKey: "en.prompt", outputKey: "hi.prompt" },
-    { inputKey: "en.prompt", outputKey: "it.prompt" },
-    { inputKey: "en.prompt", outputKey: "ja.prompt" },
-    { inputKey: "en.prompt", outputKey: "ko.prompt" },
-    { inputKey: "en.prompt", outputKey: "pt.prompt" },
-    { inputKey: "en.prompt", outputKey: "ru.prompt" },
-  ];
+  const memoizedDefaultMappings = useMemo(() => defaultMappings.map((mapping, index) => ({ ...mapping, id: index })), []);
 
-  const [keyMappings, setKeyMappings] = useState<Array<{ inputKey: string; outputKey: string }>>([{ inputKey: "", outputKey: "" }]);
-
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!jsonInput) {
       message.error("JSON Input 不能为空");
       return;
     }
+    setJsonOutput("");
 
     let jsonObject;
     try {
@@ -40,25 +46,30 @@ const JsonValueTransformer = () => {
       return;
     }
 
-    const transformations = keyMappings.map((mapping) => {
+    let hasError = false;
+
+    for (const mapping of keyMappings) {
       if (!mapping.inputKey || !mapping.outputKey) {
         message.error("输入键或输出键不能为空");
-        return;
+        hasError = true;
+        break;
       }
       const inputNodes = JSONPath({ path: `$..${mapping.inputKey}`, json: jsonObject, resultType: "all" });
       const outputNodes = JSONPath({ path: `$..${mapping.outputKey}`, json: jsonObject, resultType: "all" });
 
       if (inputNodes.length === 0) {
         message.error(`输入键 ${mapping.inputKey} 在 JSON 中找不到`);
-        return;
+        hasError = true;
+        break;
       }
       if (outputNodes.length === 0) {
         message.error(`输出键 ${mapping.outputKey} 在 JSON 中找不到`);
-        return;
+        hasError = true;
+        break;
       }
 
       inputNodes.forEach((node, index) => {
-        let outputNodePathArray = JSONPath.toPathArray(outputNodes[index].path);
+        const outputNodePathArray = JSONPath.toPathArray(outputNodes[index].path);
         if (outputNodePathArray && outputNodePathArray.length > 0) {
           let currentNode = jsonObject;
           for (let i = 1; i < outputNodePathArray.length - 1; i++) {
@@ -67,32 +78,32 @@ const JsonValueTransformer = () => {
           currentNode[outputNodePathArray[outputNodePathArray.length - 1]] = node.value;
         }
       });
-    });
-
-    // 等待所有的键映射完成
-    Promise.all(transformations).then(() => {
-      setJsonOutput(JSON.stringify(jsonObject, null, 2));
-    });
-  };
-
-  const toggleUsePreset = () => {
-    if (isPresetUsed) {
-      setIsPresetUsed(false);
-    } else {
-      setIsPresetUsed(true);
-      setKeyMappings(defaultMappings);
     }
-  };
+
+    if (!hasError) {
+      setJsonOutput(JSON.stringify(jsonObject, null, 2));
+    }
+  }, [jsonInput, keyMappings]);
+
+  const toggleUsePreset = useCallback(() => {
+    setIsPresetUsed((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    setKeyMappings(isPresetUsed ? memoizedDefaultMappings : [{ inputKey: "", outputKey: "", id: 0 }]);
+  }, [isPresetUsed, memoizedDefaultMappings]);
+
   return (
     <>
-      <Typography.Paragraph type="secondary" style={{ fontSize: "14px" }}>
+      <Title level={2}>JSON 键值替换工具</Title>
+      <Paragraph type="secondary">
         通过键映射（key mapping）来修改 JSON 数据。用户可以输入一对键（输入键和输出键），该工具会查找 JSON 数据中的输入键位置，然后将对应位置的值替换为输出键位置的值。
-      </Typography.Paragraph>
+      </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title="输入区">
             <Button onClick={toggleUsePreset} style={{ marginBottom: "16px" }}>
-              {isPresetUsed ? "显示映射" : "使用预设映射"}
+              {isPresetUsed ? "自定义映射" : "使用预设映射（AIShort）"}
             </Button>
             {!isPresetUsed && <KeyMappingInput keyMappings={keyMappings} setKeyMappings={setKeyMappings} />}
 
@@ -119,4 +130,4 @@ const JsonValueTransformer = () => {
   );
 };
 
-export default JsonValueTransformer;
+export default ClientPage;

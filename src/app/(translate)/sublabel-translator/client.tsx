@@ -2,16 +2,15 @@
 import React, { useState, useEffect } from "react";
 import { Flex, Button, Input, Upload, Form, Space, message, Typography, Select, Modal, Progress, Radio, RadioChangeEvent } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { languages, translationMethods } from "../components/transalteConstants";
-import { translateText } from "../components/translateText";
+import { languages, translationMethods } from "@/app/components/transalteConstants";
+import { translateText } from "@/app/components/translateText";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
 const { Dragger } = Upload;
 
-const SubtitleTranslator = () => {
+const ClientPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [multipleFiles, setMultipleFiles] = useState<File[]>([]);
   const [translationMethod, setTranslationMethod] = useState<string>("deeplx");
@@ -257,14 +256,12 @@ const SubtitleTranslator = () => {
 
   return (
     <>
-      <Title level={3} style={{ marginBottom: "24px" }}>
-        字幕翻译工具
-      </Title>
-      <Typography.Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }}>
+      <Title level={3}>字幕翻译工具</Title>
+      <Paragraph type="secondary">
         本工具支持 .srt 字幕文件的翻译，支持单文件和多文件翻译。请上传或粘贴字幕文件，选择翻译语言和翻译方法，然后点击翻译按钮。翻译结果将会显示在下方，您可以复制或导出字幕文件。了解更多：
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
         <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
-      </Typography.Paragraph>
+      </Paragraph>
       <Radio.Group value={translationMode} onChange={handleTranslationModeChange}>
         <Radio.Button value="single">单文件翻译</Radio.Button>
         <Radio.Button value="multiple">多文件翻译</Radio.Button>
@@ -345,4 +342,4 @@ const SubtitleTranslator = () => {
   );
 };
 
-export default SubtitleTranslator;
+export default ClientPage;

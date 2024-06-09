@@ -1,4 +1,4 @@
-import FlareDataPage from "./client";
+import ClientPage from "./client";
 
 import type { Metadata } from "next";
 
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <FlareDataPage />;
+  return <ClientPage />;
 }
