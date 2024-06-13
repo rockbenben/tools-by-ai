@@ -16,6 +16,8 @@ const ClientPage = () => {
   const [translationMethod, setTranslationMethod] = useState<string>("deeplx");
   const [apiKeyDeepl, setApiKeyDeepl] = useState<string>("");
   const [apiKeyGoogleTranslate, setApiKeyGoogleTranslate] = useState<string>("");
+  const [apiKeyAzure, setApiKeyAzure] = useState<string>("");
+  const [apiRegionAzure, setApiRegionAzure] = useState<string>("eastasia");
   const [sourceLanguage, setSourceLanguage] = useState<string>("en");
   const [targetLanguage, setTargetLanguage] = useState<string>("zh");
   const [sourceText, setSourceText] = useState<string>("");
@@ -37,6 +39,8 @@ const ClientPage = () => {
     loadFromLocalStorage("translationMethod", setTranslationMethod);
     loadFromLocalStorage("apiKeyDeepl", setApiKeyDeepl);
     loadFromLocalStorage("apiKeyGoogleTranslate", setApiKeyGoogleTranslate);
+    loadFromLocalStorage("apiKeyAzure", setApiKeyAzure);
+    loadFromLocalStorage("apiRegionAzure", setApiRegionAzure);
     loadFromLocalStorage("sourceLanguage", setSourceLanguage);
     loadFromLocalStorage("targetLanguage", setTargetLanguage);
     setIsClient(true);
@@ -51,10 +55,12 @@ const ClientPage = () => {
       saveToLocalStorage("translationMethod", translationMethod);
       saveToLocalStorage("apiKeyDeepl", apiKeyDeepl);
       saveToLocalStorage("apiKeyGoogleTranslate", apiKeyGoogleTranslate);
+      saveToLocalStorage("apiKeyAzure", apiKeyAzure);
+      saveToLocalStorage("apiRegionAzure", apiRegionAzure);
       saveToLocalStorage("sourceLanguage", sourceLanguage);
       saveToLocalStorage("targetLanguage", targetLanguage);
     }
-  }, [translationMethod, apiKeyDeepl, apiKeyGoogleTranslate, sourceLanguage, targetLanguage, isClient]);
+  }, [translationMethod, apiKeyDeepl, apiKeyGoogleTranslate, apiKeyAzure, apiRegionAzure, sourceLanguage, targetLanguage, isClient]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | null = null;
@@ -92,7 +98,13 @@ const ClientPage = () => {
       setApiKeyGoogleTranslate(value);
     } else if (method === "deepl") {
       setApiKeyDeepl(value);
+    } else if (method === "azure") {
+      setApiKeyAzure(value);
     }
+  };
+
+  const handleApiRegionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiRegionAzure(e.target.value);
   };
 
   const handleSourceLanguageChange = (value: string) => {
@@ -117,7 +129,8 @@ const ClientPage = () => {
       translationMethod,
       targetLanguage,
       sourceLanguage,
-      apiKey: translationMethod === "deepl" ? apiKeyDeepl : apiKeyGoogleTranslate,
+      apiKey: translationMethod === "deepl" ? apiKeyDeepl : translationMethod === "google" ? apiKeyGoogleTranslate : apiKeyAzure,
+      apiRegion: translationMethod === "azure" && apiRegionAzure ? apiRegionAzure : "eastasia",
     });
   };
 
@@ -139,7 +152,7 @@ const ClientPage = () => {
       return;
     }
 
-    if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate) {
+    if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate && !apiKeyAzure) {
       message.error("请设置 API Key");
       return;
     }
@@ -187,7 +200,7 @@ const ClientPage = () => {
       return;
     }
 
-    if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate) {
+    if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate && !apiKeyAzure) {
       message.error("请设置 API Key");
       return;
     }
@@ -288,7 +301,8 @@ const ClientPage = () => {
       <Paragraph type="secondary">
         本工具支持 .srt 字幕文件的翻译，支持单文件和多文件翻译。请上传或粘贴字幕文件，选择翻译语言和翻译方法，然后点击翻译按钮。翻译结果将会显示在下方，您可以复制或导出字幕文件。了解更多：
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
-        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
+        <a href="https://learn.microsoft.com/zh-cn/azure/ai-services/translator/reference/v3-0-translate">Azure Translate</a>；<a href="https://www.deepl.com/your-account/keys">DeepL API</a>
+        。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
       </Paragraph>
       <Radio.Group value={translationMode} onChange={handleTranslationModeChange}>
         <Radio.Button value="single">单文件翻译</Radio.Button>
@@ -325,11 +339,19 @@ const ClientPage = () => {
       )}
       <Flex wrap="wrap" gap="small" style={{ marginTop: "8px" }}>
         <Form.Item label="翻译 API">
-          <Select value={translationMethod} onChange={(value) => setTranslationMethod(value)} options={translationMethods} />
-          {translationMethod === "deepl" && <Input placeholder="输入 DeepL API Key" value={apiKeyDeepl} onChange={(e) => handleApiKeyChange(e, "deepl")} style={{ width: "300px" }} />}
-          {translationMethod === "google" && (
-            <Input placeholder="输入 Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => handleApiKeyChange(e, "google")} style={{ width: "300px" }} />
-          )}
+          <Space>
+            <Select value={translationMethod} onChange={(value) => setTranslationMethod(value)} options={translationMethods} />
+            {translationMethod === "deepl" && <Input placeholder="输入 DeepL API Key" value={apiKeyDeepl} onChange={(e) => handleApiKeyChange(e, "deepl")} style={{ width: "300px" }} />}
+            {translationMethod === "google" && (
+              <Input placeholder="输入 Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => handleApiKeyChange(e, "google")} style={{ width: "320px" }} />
+            )}
+            {translationMethod === "azure" && (
+              <>
+                <Input placeholder="输入 Azure API Key" value={apiKeyAzure} onChange={(e) => handleApiKeyChange(e, "azure")} style={{ width: "300px" }} />
+                <Input placeholder="输入 Azure API Region" value={apiRegionAzure} onChange={handleApiRegionChange} />
+              </>
+            )}
+          </Space>
         </Form.Item>
         <Space style={{ display: "flex" }} align="baseline">
           <Form.Item label="源语言">

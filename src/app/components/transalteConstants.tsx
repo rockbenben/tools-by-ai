@@ -1,5 +1,6 @@
 export const translationMethods = [
   { value: "google", label: "Google Translate" },
+  { value: "azure", label: "Azure Translate" },
   { value: "deepl", label: "DeepL" },
   { value: "deeplx", label: "DeepLX（免费）" },
 ];

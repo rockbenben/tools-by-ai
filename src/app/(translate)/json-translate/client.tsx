@@ -14,6 +14,8 @@ const { Title, Paragraph } = Typography;
 const ClientPage = () => {
   const [apiKeyDeepl, setApiKeyDeepl] = useState<string>("");
   const [apiKeyGoogleTranslate, setApiKeyGoogleTranslate] = useState<string>("");
+  const [apiKeyAzure, setApiKeyAzure] = useState<string>("");
+  const [apiRegionAzure, setApiRegionAzure] = useState<string>("eastasia");
   const [translationMethod, setTranslationMethod] = useState<string>("deeplx");
   const [sourceLanguage, setSourceLanguage] = useState<string>("en");
   const [targetLanguage, setTargetLanguage] = useState<string>("zh");
@@ -36,6 +38,8 @@ const ClientPage = () => {
 
     loadFromLocalStorage("apiKeyDeepl", setApiKeyDeepl);
     loadFromLocalStorage("apiKeyGoogleTranslate", setApiKeyGoogleTranslate);
+    loadFromLocalStorage("apiKeyAzure", setApiKeyAzure);
+    loadFromLocalStorage("apiRegionAzure", setApiRegionAzure);
     loadFromLocalStorage("translationMethod", setTranslationMethod);
     loadFromLocalStorage("sourceLanguage", setSourceLanguage);
     loadFromLocalStorage("targetLanguage", setTargetLanguage);
@@ -54,6 +58,8 @@ const ClientPage = () => {
 
       saveToLocalStorage("apiKeyDeepl", apiKeyDeepl);
       saveToLocalStorage("apiKeyGoogleTranslate", apiKeyGoogleTranslate);
+      saveToLocalStorage("apiKeyAzure", apiKeyAzure);
+      saveToLocalStorage("apiRegionAzure", apiRegionAzure);
       saveToLocalStorage("translationMethod", translationMethod);
       saveToLocalStorage("sourceLanguage", sourceLanguage);
       saveToLocalStorage("targetLanguage", targetLanguage);
@@ -61,7 +67,7 @@ const ClientPage = () => {
       saveToLocalStorage("simpleInputKey", simpleInputKey);
       saveToLocalStorage("keyMappings", keyMappings);
     }
-  }, [apiKeyDeepl, apiKeyGoogleTranslate, translationMethod, sourceLanguage, targetLanguage, showSimpleInput, simpleInputKey, keyMappings, isClient]);
+  }, [apiKeyDeepl, apiKeyGoogleTranslate, apiKeyAzure, apiRegionAzure, translationMethod, sourceLanguage, targetLanguage, showSimpleInput, simpleInputKey, keyMappings, isClient]);
 
   const toggleInputType = () => {
     setShowSimpleInput(!showSimpleInput);
@@ -110,8 +116,8 @@ const ClientPage = () => {
     setJsonOutput("");
 
     // Check Input
-    if ((translationMethod === "deepl" && !apiKeyDeepl) || (translationMethod === "google" && !apiKeyGoogleTranslate)) {
-      message.error("Google/DeepL 翻译方法中，API Key 不能为空。没有 API 的话，可以使用 DeepLX 免费翻译。");
+    if ((translationMethod === "deepl" && !apiKeyDeepl) || (translationMethod === "google" && !apiKeyGoogleTranslate) || (translationMethod === "azure" && !apiKeyAzure)) {
+      message.error("Google/DeepL/Azure 翻译方法中，API Key 不能为空。没有 API 的话，可以使用 DeepLX 免费翻译。");
       return;
     }
     if (!jsonInput) {
@@ -183,7 +189,8 @@ const ClientPage = () => {
               translationMethod,
               targetLanguage,
               sourceLanguage,
-              apiKey: translationMethod === "deepl" ? apiKeyDeepl : apiKeyGoogleTranslate,
+              apiKey: translationMethod === "deepl" ? apiKeyDeepl : translationMethod === "google" ? apiKeyGoogleTranslate : apiKeyAzure,
+              apiRegion: translationMethod === "azure" && apiRegionAzure ? apiRegionAzure : "eastasia",
             });
             applyTranslation(jsonObject, outputNodes[index].path, translatedText);
           } catch (error) {
@@ -224,7 +231,8 @@ const ClientPage = () => {
         <br />
         了解更多：<a href="https://newzone.top/apps/devdocs/json-translate.html">使用教程</a>；
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
-        <a href="https://www.deepl.com/your-account/keys">DeepL API</a>。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
+        <a href="https://learn.microsoft.com/zh-cn/azure/ai-services/translator/reference/v3-0-translate">Azure Translate</a>；<a href="https://www.deepl.com/your-account/keys">DeepL API</a>
+        。本工具不会储存您的 API Key，所有数据均缓存在本地浏览器中。
       </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
@@ -241,6 +249,16 @@ const ClientPage = () => {
               <Form.Item>
                 <Input placeholder="Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => setApiKeyGoogleTranslate(e.target.value)} />
               </Form.Item>
+            )}
+            {translationMethod === "azure" && (
+              <>
+                <Form.Item>
+                  <Input placeholder="Azure API Key" value={apiKeyAzure} onChange={(e) => setApiKeyAzure(e.target.value)} />
+                </Form.Item>
+                <Form.Item>
+                  <Input placeholder="Azure API Region" value={apiRegionAzure} onChange={(e) => setApiRegionAzure(e.target.value)} />
+                </Form.Item>
+              </>
             )}
             <Space style={{ display: "flex" }} align="baseline">
               <Form.Item label="源语言">
