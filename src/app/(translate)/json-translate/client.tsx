@@ -26,7 +26,6 @@ const ClientPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
-  // Load initial state from localStorage
   useEffect(() => {
     const loadFromLocalStorage = (key, setState, parseJson = false) => {
       const storedValue = localStorage.getItem(key);
@@ -44,10 +43,9 @@ const ClientPage = () => {
     loadFromLocalStorage("simpleInputKey", setSimpleInputKey);
     loadFromLocalStorage("keyMappings", setKeyMappings, true);
 
-    setIsClient(true); // Indicate that the client-side is loaded
+    setIsClient(true);
   }, []);
 
-  // Update localStorage when state changes
   useEffect(() => {
     if (isClient) {
       const saveToLocalStorage = (key, value) => {
@@ -90,6 +88,23 @@ const ClientPage = () => {
     setTargetLanguage(value);
   };
 
+  const testDeeplxTranslation = async () => {
+    try {
+      const testTranslation = await translateText({
+        text: "Hello world",
+        translationMethod: "deeplx",
+        targetLanguage,
+        sourceLanguage,
+      });
+      if (!testTranslation) {
+        throw new Error("测试翻译失败");
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const handleTranslate = async () => {
     // Reset Output
     setJsonOutput("");
@@ -102,6 +117,15 @@ const ClientPage = () => {
     if (!jsonInput) {
       message.error("JSON Input 不能为空");
       return;
+    }
+
+    if (translationMethod === "deeplx") {
+      const isDeeplxWorking = await testDeeplxTranslation();
+      if (!isDeeplxWorking) {
+        message.error("当前 Deeplx 节点有问题，请切换其他翻译模式");
+        setTranslationMethod("google"); // 默认切换到 Google 翻译，可以根据需要调整
+        return;
+      }
     }
 
     let jsonObject;

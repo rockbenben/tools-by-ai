@@ -121,6 +121,18 @@ const ClientPage = () => {
     });
   };
 
+  const testDeeplxTranslation = async () => {
+    try {
+      const testTranslation = await translateTextUsingMethod("Hello world");
+      if (!testTranslation) {
+        throw new Error("测试翻译失败");
+      }
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const handleTranslate = async () => {
     if (sourceLanguage === targetLanguage) {
       message.error("源语言和目标语言不能相同");
@@ -132,32 +144,40 @@ const ClientPage = () => {
       return;
     }
 
+    if (translationMethod === "deeplx") {
+      const isDeeplxWorking = await testDeeplxTranslation();
+      if (!isDeeplxWorking) {
+        message.error("当前 Deeplx 节点有问题，请切换其他翻译模式");
+        setTranslationMethod("google"); // 默认切换到 Google 翻译
+        return;
+      }
+    }
+
     setTranslateInProgress(true);
     setStartTime(Date.now());
 
     const lines = sourceText.split("\n");
-    const contentLines: string[] = [];
-    const contentIndices: number[] = [];
+    const translatedLines: string[] = [];
 
-    lines.forEach((line, index) => {
+    for (const line of lines) {
       const isTimecode = /^[\d:,]+ --> [\d:,]+$/.test(line);
       const isIndex = /^\d+$/.test(line);
       const isNumeric = /^\d+(\.\d+)?$/.test(line.trim());
       if (!isIndex && !isTimecode && !isNumeric && line.trim().length > 0) {
-        contentLines.push(line);
-        contentIndices.push(index);
+        try {
+          const translatedLine = await translateTextUsingMethod(line);
+          translatedLines.push(translatedLine);
+        } catch (error) {
+          message.error("翻译过程中发生错误");
+          setTranslateInProgress(false);
+          return;
+        }
+      } else {
+        translatedLines.push(line);
       }
-    });
+    }
 
-    const translatedContent = await translateTextUsingMethod(contentLines.join("\n"));
-    const translatedLines = translatedContent.split("\n");
-
-    const translatedTextArray = [...lines];
-    contentIndices.forEach((index, i) => {
-      translatedTextArray[index] = translatedLines[i];
-    });
-
-    setTranslatedText(translatedTextArray.join("\n"));
+    setTranslatedText(translatedLines.join("\n"));
     setTranslateInProgress(false);
   };
 
@@ -170,6 +190,15 @@ const ClientPage = () => {
     if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate) {
       message.error("请设置 API Key");
       return;
+    }
+
+    if (translationMethod === "deeplx") {
+      const isDeeplxWorking = await testDeeplxTranslation();
+      if (!isDeeplxWorking) {
+        message.error("当前 Deeplx 节点有问题，请切换其他翻译模式");
+        setTranslationMethod("google"); // 默认切换到 Google 翻译
+        return;
+      }
     }
 
     if (multipleFiles.length === 0) {
@@ -187,28 +216,27 @@ const ClientPage = () => {
           reader.onload = async (e) => {
             const sourceText = e.target?.result as string;
             const lines = sourceText.split("\n");
-            const contentLines: string[] = [];
-            const contentIndices: number[] = [];
+            const translatedLines: string[] = [];
 
-            lines.forEach((line, index) => {
+            for (const line of lines) {
               const isTimecode = /^[\d:,]+ --> [\d:,]+$/.test(line);
               const isIndex = /^\d+$/.test(line);
               const isNumeric = /^\d+(\.\d+)?$/.test(line.trim());
               if (!isIndex && !isTimecode && !isNumeric && line.trim().length > 0) {
-                contentLines.push(line);
-                contentIndices.push(index);
+                try {
+                  const translatedLine = await translateTextUsingMethod(line);
+                  translatedLines.push(translatedLine);
+                } catch (error) {
+                  message.error("翻译过程中发生错误");
+                  setTranslateInProgress(false);
+                  return;
+                }
+              } else {
+                translatedLines.push(line);
               }
-            });
+            }
 
-            const translatedContent = await translateTextUsingMethod(contentLines.join("\n"));
-            const translatedLines = translatedContent.split("\n");
-
-            const translatedTextArray = [...lines];
-            contentIndices.forEach((index, i) => {
-              translatedTextArray[index] = translatedLines[i];
-            });
-
-            const translatedText = translatedTextArray.join("\n");
+            const translatedText = translatedLines.join("\n");
             const blob = new Blob([translatedText], {
               type: "text/plain;charset=utf-8",
             });
