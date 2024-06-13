@@ -1,9 +1,10 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { Flex, Button, Input, Upload, Form, Space, message, Typography, Select, Modal, Progress, Radio, RadioChangeEvent } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import { languages, translationMethods } from "@/app/components/transalteConstants";
-import { translateText } from "@/app/components/translateText";
+import { splitTextIntoChunks, translateText } from "@/app/components/translateText";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
@@ -81,7 +82,8 @@ const ClientPage = () => {
     setFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
-      setSourceText(e.target?.result as string);
+      const text = (e.target?.result as string).replace(/\r\n/g, "\n");
+      setSourceText(text);
     };
     reader.readAsText(file);
     return false;
@@ -146,63 +148,32 @@ const ClientPage = () => {
     }
   };
 
-  const handleTranslate = async () => {
-    if (sourceLanguage === targetLanguage) {
-      message.error("源语言和目标语言不能相同");
-      return;
-    }
+  const filterContentLines = (lines: string[]) => {
+    const contentLines: string[] = [];
+    const contentIndices: number[] = [];
 
-    if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate && !apiKeyAzure) {
-      message.error("请设置 API Key");
-      return;
-    }
-
-    if (translationMethod === "deeplx") {
-      const isDeeplxWorking = await testDeeplxTranslation();
-      if (!isDeeplxWorking) {
-        message.error("当前 Deeplx 节点有问题，请切换其他翻译模式");
-        setTranslationMethod("google"); // 默认切换到 Google 翻译
-        return;
-      }
-    }
-
-    setTranslateInProgress(true);
-    setStartTime(Date.now());
-
-    const lines = sourceText.split("\n");
-    const translatedLines: string[] = [];
-
-    for (const line of lines) {
+    lines.forEach((line, index) => {
       const isTimecode = /^[\d:,]+ --> [\d:,]+$/.test(line);
       const isIndex = /^\d+$/.test(line);
       const isNumeric = /^\d+(\.\d+)?$/.test(line.trim());
       if (!isIndex && !isTimecode && !isNumeric && line.trim().length > 0) {
-        try {
-          const translatedLine = await translateTextUsingMethod(line);
-          translatedLines.push(translatedLine);
-        } catch (error) {
-          message.error("翻译过程中发生错误");
-          setTranslateInProgress(false);
-          return;
-        }
-      } else {
-        translatedLines.push(line);
+        contentLines.push(line);
+        contentIndices.push(index);
       }
-    }
+    });
 
-    setTranslatedText(translatedLines.join("\n"));
-    setTranslateInProgress(false);
+    return { contentLines, contentIndices };
   };
 
-  const handleMultipleTranslate = async () => {
+  const validateInputs = async () => {
     if (sourceLanguage === targetLanguage) {
       message.error("源语言和目标语言不能相同");
-      return;
+      return false;
     }
 
     if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate && !apiKeyAzure) {
       message.error("请设置 API Key");
-      return;
+      return false;
     }
 
     if (translationMethod === "deeplx") {
@@ -210,9 +181,64 @@ const ClientPage = () => {
       if (!isDeeplxWorking) {
         message.error("当前 Deeplx 节点有问题，请切换其他翻译模式");
         setTranslationMethod("google"); // 默认切换到 Google 翻译
-        return;
+        return false;
       }
     }
+
+    return true;
+  };
+
+  const performTranslation = async (sourceText: string, fileName?: string) => {
+    const lines = sourceText.split("\n");
+    const { contentLines, contentIndices } = filterContentLines(lines);
+
+    try {
+      const chunks = splitTextIntoChunks(contentLines.join("\n"), 3000);
+      const translatedLines: string[] = [];
+
+      for (const chunk of chunks) {
+        const translatedContent = await translateTextUsingMethod(chunk);
+        translatedLines.push(translatedContent);
+      }
+
+      const finalTranslatedLines = translatedLines.join("\n").split("\n");
+      const translatedTextArray = [...lines];
+      contentIndices.forEach((index, i) => {
+        translatedTextArray[index] = finalTranslatedLines[i];
+      });
+
+      const translatedText = translatedTextArray.join("\n");
+
+      if (fileName) {
+        const blob = new Blob([translatedText], {
+          type: "text/plain;charset=utf-8",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      } else {
+        setTranslatedText(translatedText);
+      }
+    } catch (error) {
+      message.error("翻译过程中发生错误");
+    } finally {
+      setTranslateInProgress(false);
+    }
+  };
+
+  const handleTranslate = async () => {
+    if (!(await validateInputs())) return;
+
+    setTranslateInProgress(true);
+    setStartTime(Date.now());
+
+    await performTranslation(sourceText);
+  };
+
+  const handleMultipleTranslate = async () => {
+    if (!(await validateInputs())) return;
 
     if (multipleFiles.length === 0) {
       message.error("请选择要翻译的字幕文件");
@@ -222,54 +248,19 @@ const ClientPage = () => {
     setTranslateInProgress(true);
     setStartTime(Date.now());
 
-    try {
-      for (const currentFile of multipleFiles) {
-        const reader = new FileReader();
-        await new Promise<void>((resolve) => {
-          reader.onload = async (e) => {
-            const sourceText = e.target?.result as string;
-            const lines = sourceText.split("\n");
-            const translatedLines: string[] = [];
-
-            for (const line of lines) {
-              const isTimecode = /^[\d:,]+ --> [\d:,]+$/.test(line);
-              const isIndex = /^\d+$/.test(line);
-              const isNumeric = /^\d+(\.\d+)?$/.test(line.trim());
-              if (!isIndex && !isTimecode && !isNumeric && line.trim().length > 0) {
-                try {
-                  const translatedLine = await translateTextUsingMethod(line);
-                  translatedLines.push(translatedLine);
-                } catch (error) {
-                  message.error("翻译过程中发生错误");
-                  setTranslateInProgress(false);
-                  return;
-                }
-              } else {
-                translatedLines.push(line);
-              }
-            }
-
-            const translatedText = translatedLines.join("\n");
-            const blob = new Blob([translatedText], {
-              type: "text/plain;charset=utf-8",
-            });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `${currentFile.name}`;
-            link.click();
-            URL.revokeObjectURL(link.href);
-
-            resolve();
-          };
-          reader.readAsText(currentFile);
-        });
-      }
-      message.success("翻译完成，已自动下载所有翻译后的字幕文件");
-    } catch (error) {
-      message.error("翻译过程中发生错误");
-    } finally {
-      setTranslateInProgress(false);
+    for (const currentFile of multipleFiles) {
+      const reader = new FileReader();
+      await new Promise<void>((resolve) => {
+        reader.onload = async (e) => {
+          const text = (e.target?.result as string).replace(/\r\n/g, "\n");
+          await performTranslation(text, currentFile.name);
+          resolve();
+        };
+        reader.readAsText(currentFile);
+      });
     }
+
+    message.success("翻译完成，已自动下载所有翻译后的字幕文件");
   };
 
   const handleExportSubtitle = () => {

@@ -7,6 +7,26 @@ interface TranslateTextParams {
   apiRegion?: string;
 }
 
+export const splitTextIntoChunks = (text: string, maxLength: number) => {
+  const chunks = [];
+  let currentChunk = "";
+
+  text.split("\n").forEach((line) => {
+    if (currentChunk.length + line.length + 1 > maxLength) {
+      chunks.push(currentChunk);
+      currentChunk = line;
+    } else {
+      currentChunk += currentChunk ? "\n" + line : line;
+    }
+  });
+
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+
+  return chunks;
+};
+
 export const translateText = async ({ text, translationMethod, targetLanguage, sourceLanguage, apiKey, apiRegion = "eastasia" }: TranslateTextParams): Promise<string | null> => {
   try {
     // 如果文本为空或源语言和目标语言相同，则直接返回原文
