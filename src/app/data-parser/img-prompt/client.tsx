@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Flex, Typography, Input, Button } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, BgColorsOutlined } from "@ant-design/icons";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
@@ -28,7 +28,9 @@ const ClientPage = () => {
 
   return (
     <Flex gap="small" vertical>
-      <Title level={2}>IMGPrompt 数据转换器</Title>
+      <Title level={3}>
+        <BgColorsOutlined /> IMGPrompt 数据转换器
+      </Title>
       <Paragraph type="secondary">
         本工具用于批量生成 IMGPrompt 数据。用户可以通过输入特定格式的文本（例如：显示名称与语言名称，用制表符分隔，即「displayName langName」）以及指定的对象和属性，来快速生成 JSON 格式的数据。
       </Paragraph>

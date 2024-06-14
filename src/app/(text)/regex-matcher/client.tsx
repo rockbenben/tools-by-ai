@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Input, Button, Row, Col, Card, Radio, Space, Typography } from "antd";
-import { CopyOutlined, SortAscendingOutlined, SortDescendingOutlined } from "@ant-design/icons";
+import { CopyOutlined, CodeOutlined, SortAscendingOutlined, SortDescendingOutlined } from "@ant-design/icons";
 import { cleanText } from "@/app/components/cleanText";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
@@ -13,7 +13,7 @@ const commonRegexes = [
   { label: "URL（宽松匹配）", value: 'https?://[^\\s"。？,，)#]+' },
 ];
 
-const ToolPage = () => {
+const ClientPage = () => {
   const defaultRegex = commonRegexes[0].value;
   const [inputText, setInputText] = useState("");
   const [regex, setRegex] = useState(defaultRegex);
@@ -60,7 +60,9 @@ const ToolPage = () => {
 
   return (
     <>
-      <Title level={3}>正则匹配工具</Title>
+      <Title level={3}>
+        <CodeOutlined /> 正则匹配处理工具
+      </Title>
       <Paragraph type="secondary">
         在「待匹配文本框」输入文本，在「正则规则框」输入正则表达式。点击“匹配”按钮后，工具将显示匹配结果和匹配数量。用户可点击“复制结果”按钮，将匹配结果复制到剪贴板。
       </Paragraph>
@@ -113,4 +115,4 @@ const ToolPage = () => {
   );
 };
 
-export default ToolPage;
+export default ClientPage;

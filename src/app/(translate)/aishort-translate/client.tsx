@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Form, Typography, Input, message, Card, Spin } from "antd";
+import { GlobalOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import { translateText } from "@/app/components/translateText";
 import { preprocessJson } from "@/app/components/preprocessJson";
@@ -10,7 +11,7 @@ import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { Title, Paragraph } = Typography;
 
-const AIShortTranslate = () => {
+const ClientPage = () => {
   const [apiKeyGoogleTranslate, setApiKeyGoogleTranslate] = useState<string>("");
   const [apiKeyDeepl, setApiKeyDeepl] = useState<string>("");
 
@@ -141,10 +142,10 @@ const AIShortTranslate = () => {
 
   return (
     <>
-      <Title level={3} style={{ marginBottom: "24px" }}>
-        ChatGPT Shortcut 定制翻译工具
+      <Title level={3}>
+        <GlobalOutlined /> ChatGPT Shortcut 定制翻译工具
       </Title>
-      <Paragraph type="secondary" style={{ fontSize: "14px", marginBottom: "20px" }} ellipsis={{ rows: 3, expandable: true, symbol: "more" }}>
+      <Paragraph type="secondary" ellipsis={{ rows: 3, expandable: true, symbol: "more" }}>
         专为 ChatGPT Shortcut 的 prompt.json 数据结构设计的翻译工具，支持一键快捷翻译 13 种语言，操作简便，无需额外配置。对于印地语和孟加拉语，该工具默认使用 Google Translate
         进行翻译。对于其他语言，则优先选用 DeepL 作为翻译服务。在用户未提供 Google Translate 或 DeepL 的 API 密钥的情况下，系统会自动切换到
         DeepLX，这是一个无需费用的翻译服务，保证基本的翻译需求得到满足。API：
@@ -185,4 +186,4 @@ const AIShortTranslate = () => {
   );
 };
 
-export default AIShortTranslate;
+export default ClientPage;

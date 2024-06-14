@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from "react";
 import { Row, Col, Button, Form, Input, message, Typography, Card, Space, Checkbox, Tooltip } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, EditOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
@@ -101,7 +101,9 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={2}>JSON 节点批量编辑</Title>
+      <Title level={3}>
+        <EditOutlined /> JSON 节点批量编辑
+      </Title>
       <Paragraph type="secondary">
         在 JSON 中查找节点并编辑它们的值，你可以为找到的节点的值添加前缀、后缀或进行替换操作。节点的查找支持批量操作，可以使用逗号来分割节点。键名支持 zh.title 等嵌套节点。
       </Paragraph>

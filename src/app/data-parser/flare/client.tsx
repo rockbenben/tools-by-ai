@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Input, Button, Typography, Row, Col, message, Radio, Flex } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, LinkOutlined } from "@ant-design/icons";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { TextArea } = Input;
@@ -94,7 +94,9 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={2}>Flare 书签解析工具</Title>
+      <Title level={3}>
+        <LinkOutlined /> Flare 书签解析工具
+      </Title>
       <Paragraph type="secondary">用于将书签数据转换为 Flare 的格式。您可以选择“App”模式以解析应用列表，或“Bookmark”模式以解析书签列表，并可实现 app 和 bookmarks 间的互相转换。</Paragraph>
       <Row gutter={16}>
         <Col span={12}>

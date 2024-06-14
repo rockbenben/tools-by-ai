@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Button, Input, Typography, Space, Checkbox, Radio, Flex } from "antd";
+import { ProfileOutlined } from "@ant-design/icons";
 import { CopyOutlined } from "@ant-design/icons";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
@@ -84,7 +85,9 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={2}>文本处理工具</Title>
+      <Title level={3}>
+        <ProfileOutlined /> 文本处理工具
+      </Title>
       <Radio.Group onChange={(e) => setSelectedTool(e.target.value)} value={selectedTool}>
         <Radio.Button value="excel">表格数据去重</Radio.Button>
         <Radio.Button value="noval">小说文本处理</Radio.Button>

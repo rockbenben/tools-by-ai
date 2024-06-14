@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Input, Button, Typography, Row, Col, message, Form } from "antd";
+
+import { CopyOutlined, FileSearchOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import { preprocessJson } from "@/app/components/preprocessJson";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
@@ -50,7 +52,9 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={2}>JSON 值提取工具</Title>
+      <Title level={3}>
+        <FileSearchOutlined /> JSON 值提取工具
+      </Title>
       <Paragraph type="secondary">
         根据输入的节点名称在 JSON 中找到相应的节点，并对节点的值进行处理，添加前缀和后缀。如果找到多个节点，将它们的值以换行形式拼接在一起。如果没有指定前缀和后缀，则只提取对应节点的值。
       </Paragraph>
@@ -84,7 +88,7 @@ const ClientPage = () => {
               <Button type="primary" htmlType="submit">
                 处理
               </Button>
-              <Button onClick={() => copyToClipboard(result)} style={{ marginLeft: "10px" }}>
+              <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(result)} style={{ marginLeft: "10px" }}>
                 复制结果
               </Button>
             </Form.Item>

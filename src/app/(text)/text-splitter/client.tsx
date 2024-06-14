@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Button, Input, Typography, Row, Col, Checkbox, message } from "antd";
+import { ScissorOutlined } from "@ant-design/icons";
 import { copyToClipboard } from "@/app/components/copyToClipboard";
 
 const { TextArea } = Input;
@@ -82,7 +83,9 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={2}>文本分割器</Title>
+      <Title level={3}>
+        <ScissorOutlined /> 文本分割器
+      </Title>
       <Paragraph type="secondary">
         本工具可以帮助您将较长的文本分割成若干段，每段长度根据您设置的字符限制进行分割。方便您在需要遵循字符限制的场景中使用。特别是对于 ChatGPT 的长度限制场景，2000 字符的限制尤为适用。
       </Paragraph>

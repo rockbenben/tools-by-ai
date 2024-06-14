@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Flex, Button, Input, Upload, Form, Space, message, Typography, Select, Modal, Progress, Radio, RadioChangeEvent } from "antd";
+import { VideoCameraOutlined } from "@ant-design/icons";
 import { InboxOutlined } from "@ant-design/icons";
 import { languages, translationMethods } from "@/app/components/transalteConstants";
 import { splitTextIntoChunks, translateText } from "@/app/components/translateText";
@@ -27,6 +28,7 @@ const ClientPage = () => {
   const [translationMode, setTranslationMode] = useState("single");
   const [isClient, setIsClient] = useState(false);
   const [progressPercent, setProgressPercent] = useState(0);
+  const [delayTime, setDelayTime] = useState<number>(200);
 
   useEffect(() => {
     const loadFromLocalStorage = (key: string, setState: (value: string) => void) => {
@@ -109,6 +111,11 @@ const ClientPage = () => {
     }
   };
 
+  const handleDelayTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    setDelayTime(value);
+  };
+
   const filterContentLines = (lines: string[]) => {
     const contentLines: string[] = [];
     const contentIndices: number[] = [];
@@ -187,7 +194,7 @@ const ClientPage = () => {
         });
         translatedLines.push(translatedContent);
         setProgressPercent((((fileIndex ? fileIndex : 0) + i / chunks.length) / (totalFiles ? totalFiles : 1)) * 100);
-        await delay(1500); // 限速1500毫秒
+        await delay(delayTime); // 使用延迟时间状态
       }
 
       const finalTranslatedLines = translatedLines.join("\n").split("\n");
@@ -278,7 +285,9 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={3}>字幕翻译工具</Title>
+      <Title level={3}>
+        <VideoCameraOutlined /> 字幕翻译工具
+      </Title>
       <Paragraph type="secondary">
         本工具支持 .srt 字幕文件的翻译，支持单文件和多文件翻译。请上传或粘贴字幕文件，选择翻译语言和翻译方法，然后点击翻译按钮。翻译结果将会显示在下方，您可以复制或导出字幕文件。了解更多：
         <a href="https://console.cloud.google.com/apis/credentials/key/2c5756a5-5a4c-4d48-993f-e478352dcc64?project=ordinal-nucleus-383814">Google Translate API</a>；
@@ -342,6 +351,9 @@ const ClientPage = () => {
             <Select value={targetLanguage} onChange={handleTargetLanguageChange} options={languages} style={{ width: "150px" }} />
           </Form.Item>
         </Space>
+        <Form.Item label="延迟时间（毫秒）">
+          <Input type="number" value={delayTime} onChange={handleDelayTimeChange} style={{ width: "150px" }} />
+        </Form.Item>
         <Button type="primary" onClick={translationMode === "single" ? handleTranslate : handleMultipleTranslate} disabled={translateInProgress}>
           翻译
         </Button>

@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { Row, Col, Button, Form, Typography, Input, message, Card } from "antd";
+import { Row, Col, Button, Form, Typography, Input, message, Card, Space } from "antd";
+import { CopyOutlined, FileSyncOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import KeyMappingInput from "@/app/components/KeyMappingInput";
 import { preprocessJson } from "@/app/components/preprocessJson";
@@ -95,14 +96,16 @@ const ClientPage = () => {
 
   return (
     <>
-      <Title level={2}>JSON 键值替换工具</Title>
+      <Title level={3}>
+        <FileSyncOutlined /> JSON 键值替换工具
+      </Title>
       <Paragraph type="secondary">
         通过键映射（key mapping）来修改 JSON 数据。用户可以输入一对键（输入键和输出键），该工具会查找 JSON 数据中的输入键位置，然后将对应位置的值替换为输出键位置的值。
       </Paragraph>
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title="输入区">
-            <Button onClick={toggleUsePreset} style={{ marginBottom: "16px" }}>
+            <Button onClick={toggleUsePreset} style={{ marginBottom: "12px" }}>
               {isPresetUsed ? "自定义映射" : "使用预设映射（AIShort）"}
             </Button>
             {!isPresetUsed && <KeyMappingInput keyMappings={keyMappings} setKeyMappings={setKeyMappings} />}
@@ -114,12 +117,14 @@ const ClientPage = () => {
         </Col>
         <Col xs={24} lg={12}>
           <Card title="结果区">
-            <Button onClick={handleEdit} style={{ marginBottom: "16px" }}>
-              Edit Json
-            </Button>
-            <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginBottom: "16px" }}>
-              Copy Result
-            </Button>
+            <Space style={{ marginBottom: "12px" }}>
+              <Button type="primary" onClick={handleEdit}>
+                Edit Json
+              </Button>
+              <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(jsonOutput)}>
+                Copy Result
+              </Button>
+            </Space>
             <Form.Item>
               <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
             </Form.Item>
