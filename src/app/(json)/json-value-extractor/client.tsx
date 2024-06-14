@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Input, Button, Typography, Row, Col, message, Form } from "antd";
-
 import { CopyOutlined, FileSearchOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import { preprocessJson } from "@/app/components/preprocessJson";

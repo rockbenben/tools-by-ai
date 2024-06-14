@@ -30,7 +30,7 @@ const projects = [
   {
     title: "SRT 字幕翻译",
     description: "自动字幕翻译，支持多种语言的字幕文件转换。",
-    link: "/sublabel-translator",
+    link: "/subtitle-translator",
     icon: <VideoCameraOutlined />,
   },
   {

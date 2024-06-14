@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/sublabel-translator`,
+      url: `${baseUrl}/subtitle-translator`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,

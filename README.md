@@ -16,7 +16,7 @@
 
 ### 其它
 
-- [SRT 字幕翻译](https://tools.newzone.top/sublabel-translator)：自动字幕翻译，支持多种语言的字幕文件转换。
+- [SRT 字幕翻译](https://tools.newzone.top/subtitle-translator)：自动字幕翻译，支持多种语言的字幕文件转换。
 
 - [正则匹配](https://tools.newzone.top/regex-matcher)：使用正则表达式匹配文本。
 
