@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Flex, Button, Input, Upload, Form, Space, message, Typography, Select, Modal, Progress, Radio, RadioChangeEvent } from "antd";
-import { VideoCameraOutlined } from "@ant-design/icons";
+import { CopyOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { InboxOutlined } from "@ant-design/icons";
 import { languages, translationMethods } from "@/app/components/transalteConstants";
 import { splitTextIntoChunks, translateText } from "@/app/components/translateText";
@@ -327,39 +327,37 @@ const ClientPage = () => {
           </Dragger>
         </div>
       )}
-      <Flex wrap="wrap" gap="small" style={{ marginTop: "8px" }}>
+      <Form layout="inline" style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
         <Form.Item label="翻译 API">
           <Space>
             <Select value={translationMethod} onChange={(value) => setTranslationMethod(value)} options={translationMethods} />
-            {translationMethod === "deepl" && <Input placeholder="输入 DeepL API Key" value={apiKeyDeepl} onChange={(e) => handleApiKeyChange(e, "deepl")} style={{ width: "300px" }} />}
-            {translationMethod === "google" && (
-              <Input placeholder="输入 Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => handleApiKeyChange(e, "google")} style={{ width: "320px" }} />
-            )}
+            {translationMethod === "deepl" && <Input placeholder="输入 DeepL API Key" value={apiKeyDeepl} onChange={(e) => handleApiKeyChange(e, "deepl")} />}
+            {translationMethod === "google" && <Input placeholder="输入 Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => handleApiKeyChange(e, "google")} />}
             {translationMethod === "azure" && (
               <>
-                <Input placeholder="输入 Azure API Key" value={apiKeyAzure} onChange={(e) => handleApiKeyChange(e, "azure")} style={{ width: "300px" }} />
+                <Input placeholder="输入 Azure API Key" value={apiKeyAzure} onChange={(e) => handleApiKeyChange(e, "azure")} />
                 <Input placeholder="输入 Azure API Region" value={apiRegionAzure} onChange={handleApiRegionChange} />
               </>
             )}
           </Space>
         </Form.Item>
-        <Space style={{ display: "flex" }} align="baseline">
-          <Form.Item label="源语言">
-            <Select value={sourceLanguage} onChange={handleSourceLanguageChange} options={languages} style={{ width: "150px" }} />
-          </Form.Item>
-          <Form.Item label="目标语言">
-            <Select value={targetLanguage} onChange={handleTargetLanguageChange} options={languages} style={{ width: "150px" }} />
-          </Form.Item>
-        </Space>
-        <Form.Item label="延迟时间（毫秒）">
-          <Input type="number" value={delayTime} onChange={handleDelayTimeChange} style={{ width: "150px" }} />
+        <Form.Item label="源语言">
+          <Select value={sourceLanguage} onChange={handleSourceLanguageChange} options={languages} />
         </Form.Item>
-        <Button type="primary" onClick={translationMode === "single" ? handleTranslate : handleMultipleTranslate} disabled={translateInProgress}>
-          翻译
+        <Form.Item label="目标语言">
+          <Select value={targetLanguage} onChange={handleTargetLanguageChange} options={languages} />
+        </Form.Item>
+        <Form.Item label="延迟时间（毫秒）">
+          <Input type="number" value={delayTime} onChange={handleDelayTimeChange} />
+        </Form.Item>
+      </Form>
+      <Flex gap="small">
+        <Button type="primary" block onClick={translationMode === "single" ? handleTranslate : handleMultipleTranslate} disabled={translateInProgress}>
+          开始翻译
         </Button>
         {translationMode === "single" && (
           <>
-            <Button onClick={() => copyToClipboard(translatedText)} disabled={!translatedText}>
+            <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(translatedText)} disabled={!translatedText}>
               复制结果
             </Button>
             <Button onClick={handleExportSubtitle} disabled={!translatedText}>

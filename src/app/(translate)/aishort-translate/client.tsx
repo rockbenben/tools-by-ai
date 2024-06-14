@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Form, Typography, Input, message, Card, Spin } from "antd";
-import { GlobalOutlined } from "@ant-design/icons";
+import { Row, Col, Button, Form, Typography, Input, message, Card, Spin, Flex } from "antd";
+import { CopyOutlined, GlobalOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import { translateText } from "@/app/components/translateText";
 import { preprocessJson } from "@/app/components/preprocessJson";
@@ -167,17 +167,15 @@ const ClientPage = () => {
         <Col xs={24} lg={12}>
           <Card title="结果区">
             <Spin spinning={isLoading}>
-              <Button
-                onClick={handleTranslate}
-                style={{ marginBottom: "16px", backgroundColor: "#1890ff", color: "#fff" }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#40a9ff")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#1890ff")}>
-                开始翻译
-              </Button>
-              <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginRight: "16px", marginBottom: "16px" }}>
-                复制翻译结果
-              </Button>
-              <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
+              <Flex wrap gap="small">
+                <Button type="primary" onClick={handleTranslate}>
+                  开始翻译
+                </Button>
+                <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(jsonOutput)}>
+                  复制翻译结果
+                </Button>
+                <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
+              </Flex>
             </Spin>
           </Card>
         </Col>

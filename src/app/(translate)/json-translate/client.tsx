@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Tooltip, Form, Typography, Input, Select, message, Card, Space, Spin } from "antd";
-import { TranslationOutlined } from "@ant-design/icons";
+import { Row, Col, Button, Tooltip, Form, Typography, Input, Select, message, Card, Space, Spin, Flex } from "antd";
+import { CopyOutlined, TranslationOutlined } from "@ant-design/icons";
 import { JSONPath } from "jsonpath-plus";
 import KeyMappingInput from "@/app/components/KeyMappingInput";
 import { preprocessJson } from "@/app/components/preprocessJson";
@@ -249,69 +249,69 @@ const ClientPage = () => {
       <Row gutter={16}>
         <Col xs={24} lg={12}>
           <Card title="输入区">
-            <Form.Item label="翻译 API">
-              <Select value={translationMethod} onChange={(value) => setTranslationMethod(value)} options={translationMethods} />
-            </Form.Item>
-            {translationMethod === "deepl" && (
-              <Form.Item>
-                <Input placeholder="DeepL API Key" value={apiKeyDeepl} onChange={(e) => setApiKeyDeepl(e.target.value)} />
+            <Form>
+              <Form.Item label="翻译 API">
+                <Select value={translationMethod} onChange={(value) => setTranslationMethod(value)} options={translationMethods} />
               </Form.Item>
-            )}
-            {translationMethod === "google" && (
-              <Form.Item>
-                <Input placeholder="Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => setApiKeyGoogleTranslate(e.target.value)} />
-              </Form.Item>
-            )}
-            {translationMethod === "azure" && (
-              <>
+              {translationMethod === "deepl" && (
                 <Form.Item>
-                  <Input placeholder="Azure API Key" value={apiKeyAzure} onChange={(e) => setApiKeyAzure(e.target.value)} />
+                  <Input placeholder="DeepL API Key" value={apiKeyDeepl} onChange={(e) => setApiKeyDeepl(e.target.value)} />
                 </Form.Item>
+              )}
+              {translationMethod === "google" && (
                 <Form.Item>
-                  <Input placeholder="Azure API Region" value={apiRegionAzure} onChange={(e) => setApiRegionAzure(e.target.value)} />
+                  <Input placeholder="Google Translate API Key" value={apiKeyGoogleTranslate} onChange={(e) => setApiKeyGoogleTranslate(e.target.value)} />
                 </Form.Item>
-              </>
-            )}
-            <Space style={{ display: "flex" }} align="baseline">
-              <Form.Item label="源语言">
-                <Select value={sourceLanguage} onChange={handleSourceLanguageChange} options={languages} style={{ width: "150px" }} />
-              </Form.Item>
-              <Form.Item label="目标语言">
-                <Select value={targetLanguage} onChange={handleTargetLanguageChange} options={languages} style={{ width: "150px" }} />
-              </Form.Item>
-            </Space>
+              )}
+              {translationMethod === "azure" && (
+                <>
+                  <Form.Item>
+                    <Input placeholder="Azure API Key" value={apiKeyAzure} onChange={(e) => setApiKeyAzure(e.target.value)} />
+                  </Form.Item>
+                  <Form.Item>
+                    <Input placeholder="Azure API Region" value={apiRegionAzure} onChange={(e) => setApiRegionAzure(e.target.value)} />
+                  </Form.Item>
+                </>
+              )}
+              <Space>
+                <Form.Item label="源语言">
+                  <Select value={sourceLanguage} onChange={handleSourceLanguageChange} options={languages} style={{ width: "150px" }} />
+                </Form.Item>
+                <Form.Item label="目标语言">
+                  <Select value={targetLanguage} onChange={handleTargetLanguageChange} options={languages} style={{ width: "150px" }} />
+                </Form.Item>
+              </Space>
 
-            {showSimpleInput ? (
-              <Form.Item label="翻译键名">
-                <Input value={simpleInputKey} onChange={(e) => setSimpleInputKey(e.target.value)} placeholder="输入欲翻译的节点键名" />
-              </Form.Item>
-            ) : (
-              <KeyMappingInput keyMappings={keyMappings} setKeyMappings={setKeyMappings} />
-            )}
+              {showSimpleInput ? (
+                <Form.Item label="翻译键名">
+                  <Input value={simpleInputKey} onChange={(e) => setSimpleInputKey(e.target.value)} placeholder="输入欲翻译的节点键名" />
+                </Form.Item>
+              ) : (
+                <KeyMappingInput keyMappings={keyMappings} setKeyMappings={setKeyMappings} />
+              )}
+            </Form>
             <Input.TextArea placeholder="JSON Input，输入要翻译的 JSON" value={jsonInput} onChange={handleJsonInputChange} rows={10} />
           </Card>
         </Col>
         <Col xs={24} lg={12}>
           <Card title="结果区">
             <Spin spinning={isLoading}>
-              <Button
-                onClick={handleTranslate}
-                style={{ marginBottom: "16px", backgroundColor: "#1890ff", color: "#fff" }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#40a9ff")}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#1890ff")}>
-                开始翻译
-              </Button>
-              <Button onClick={() => copyToClipboard(jsonOutput)} style={{ marginLeft: "16px", marginRight: "16px", marginBottom: "16px" }}>
-                复制翻译结果
-              </Button>
-              <Button onClick={toggleInputType} style={{ backgroundColor: "#f5f5f5", color: "rgba(0, 0, 0, 0.65)" }}>
-                <Tooltip
-                  title="点击以切换翻译节点模式。单一键名模式表示翻译的输入输出使用相同节点，而映射翻译则涉及不同节点。例如，节点 A 的值将翻译至节点 B，节点 C 的值则翻译至节点 D。"
-                  placement="top">
-                  {showSimpleInput ? "切换到映射翻译" : "切换到单一键名翻译"}
-                </Tooltip>
-              </Button>
-              <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
+              <Flex wrap gap="small">
+                <Button type="primary" onClick={handleTranslate}>
+                  开始翻译
+                </Button>
+                <Button icon={<CopyOutlined />} onClick={() => copyToClipboard(jsonOutput)}>
+                  复制翻译结果
+                </Button>
+                <Button onClick={toggleInputType} style={{ backgroundColor: "#f5f5f5", color: "rgba(0, 0, 0, 0.65)" }}>
+                  <Tooltip
+                    title="点击以切换翻译节点模式。单一键名模式表示翻译的输入输出使用相同节点，而映射翻译则涉及不同节点。例如，节点 A 的值将翻译至节点 B，节点 C 的值则翻译至节点 D。"
+                    placement="top">
+                    {showSimpleInput ? "切换到映射翻译" : "切换到单一键名翻译"}
+                  </Tooltip>
+                </Button>
+                <Input.TextArea placeholder="JSON Output" value={jsonOutput} rows={10} readOnly />
+              </Flex>
             </Spin>
           </Card>
         </Col>
