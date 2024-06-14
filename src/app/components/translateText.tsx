@@ -86,7 +86,7 @@ export const translateText = async ({ text, translationMethod, targetLanguage, s
         return data.data;
       }
       case "azure": {
-        const url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${targetLanguage}`;
+        const url = `https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&to=${targetLanguage}&from=${sourceLanguage}`;
         const response = await fetch(url, {
           method: "POST",
           headers: {

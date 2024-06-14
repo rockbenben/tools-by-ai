@@ -25,9 +25,8 @@ const ClientPage = () => {
   const [translatedText, setTranslatedText] = useState<string>("");
   const [translateInProgress, setTranslateInProgress] = useState(false);
   const [translationMode, setTranslationMode] = useState("single");
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [runningTime, setRunningTime] = useState(0);
   const [isClient, setIsClient] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
 
   useEffect(() => {
     const loadFromLocalStorage = (key: string, setState: (value: string) => void) => {
@@ -62,21 +61,6 @@ const ClientPage = () => {
       saveToLocalStorage("targetLanguage", targetLanguage);
     }
   }, [translationMethod, apiKeyDeepl, apiKeyGoogleTranslate, apiKeyAzure, apiRegionAzure, sourceLanguage, targetLanguage, isClient]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
-    if (translateInProgress && startTime) {
-      timer = setInterval(() => {
-        setRunningTime((Date.now() - startTime) / 1000);
-      }, 1000);
-    } else if (timer) {
-      clearInterval(timer);
-      setRunningTime(0);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [translateInProgress, startTime]);
 
   const handleFileUpload = (file: File) => {
     setFile(file);
@@ -125,29 +109,6 @@ const ClientPage = () => {
     }
   };
 
-  const translateTextUsingMethod = async (text: string) => {
-    return await translateText({
-      text,
-      translationMethod,
-      targetLanguage,
-      sourceLanguage,
-      apiKey: translationMethod === "deepl" ? apiKeyDeepl : translationMethod === "google" ? apiKeyGoogleTranslate : apiKeyAzure,
-      apiRegion: translationMethod === "azure" && apiRegionAzure ? apiRegionAzure : "eastasia",
-    });
-  };
-
-  const testDeeplxTranslation = async () => {
-    try {
-      const testTranslation = await translateTextUsingMethod("Hello world");
-      if (!testTranslation) {
-        throw new Error("测试翻译失败");
-      }
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
-
   const filterContentLines = (lines: string[]) => {
     const contentLines: string[] = [];
     const contentIndices: number[] = [];
@@ -165,15 +126,31 @@ const ClientPage = () => {
     return { contentLines, contentIndices };
   };
 
-  const validateInputs = async () => {
-    if (sourceLanguage === targetLanguage) {
-      message.error("源语言和目标语言不能相同");
+  const testDeeplxTranslation = async () => {
+    setTranslateInProgress(true);
+    setProgressPercent(10);
+    try {
+      const testTranslation = await translateText({
+        text: "Hello world",
+        translationMethod: "deeplx",
+        targetLanguage,
+        sourceLanguage,
+      });
+      if (!testTranslation) {
+        throw new Error("测试翻译失败");
+      }
+      return true;
+    } catch (error) {
       return false;
+    } finally {
+      setTranslateInProgress(false);
     }
+  };
 
-    if (translationMethod !== "deeplx" && !apiKeyDeepl && !apiKeyGoogleTranslate && !apiKeyAzure) {
-      message.error("请设置 API Key");
-      return false;
+  const validateInputs = async () => {
+    if ((translationMethod === "deepl" && !apiKeyDeepl) || (translationMethod === "google" && !apiKeyGoogleTranslate) || (translationMethod === "azure" && !apiKeyAzure)) {
+      message.error("Google/DeepL/Azure 翻译方法中，API Key 不能为空。没有 API 的话，可以使用 DeepLX 免费翻译。");
+      return;
     }
 
     if (translationMethod === "deeplx") {
@@ -188,7 +165,9 @@ const ClientPage = () => {
     return true;
   };
 
-  const performTranslation = async (sourceText: string, fileName?: string) => {
+  const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const performTranslation = async (sourceText: string, fileName?: string, fileIndex?: number, totalFiles?: number) => {
     const lines = sourceText.split("\n");
     const { contentLines, contentIndices } = filterContentLines(lines);
 
@@ -196,9 +175,19 @@ const ClientPage = () => {
       const chunks = splitTextIntoChunks(contentLines.join("\n"), 3000);
       const translatedLines: string[] = [];
 
-      for (const chunk of chunks) {
-        const translatedContent = await translateTextUsingMethod(chunk);
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        const translatedContent = await translateText({
+          text: chunk,
+          translationMethod,
+          targetLanguage,
+          sourceLanguage,
+          apiKey: translationMethod === "deepl" ? apiKeyDeepl : translationMethod === "google" ? apiKeyGoogleTranslate : apiKeyAzure,
+          apiRegion: translationMethod === "azure" && apiRegionAzure ? apiRegionAzure : "eastasia",
+        });
         translatedLines.push(translatedContent);
+        setProgressPercent((((fileIndex ? fileIndex : 0) + i / chunks.length) / (totalFiles ? totalFiles : 1)) * 100);
+        await delay(1500); // 限速1500毫秒
       }
 
       const finalTranslatedLines = translatedLines.join("\n").split("\n");
@@ -223,8 +212,6 @@ const ClientPage = () => {
       }
     } catch (error) {
       message.error("翻译过程中发生错误");
-    } finally {
-      setTranslateInProgress(false);
     }
   };
 
@@ -232,9 +219,10 @@ const ClientPage = () => {
     if (!(await validateInputs())) return;
 
     setTranslateInProgress(true);
-    setStartTime(Date.now());
+    setProgressPercent(0);
 
     await performTranslation(sourceText);
+    setTranslateInProgress(false);
   };
 
   const handleMultipleTranslate = async () => {
@@ -246,20 +234,22 @@ const ClientPage = () => {
     }
 
     setTranslateInProgress(true);
-    setStartTime(Date.now());
+    setProgressPercent(0);
 
-    for (const currentFile of multipleFiles) {
+    for (let i = 0; i < multipleFiles.length; i++) {
+      const currentFile = multipleFiles[i];
       const reader = new FileReader();
       await new Promise<void>((resolve) => {
         reader.onload = async (e) => {
           const text = (e.target?.result as string).replace(/\r\n/g, "\n");
-          await performTranslation(text, currentFile.name);
+          await performTranslation(text, currentFile.name, i, multipleFiles.length);
           resolve();
         };
         reader.readAsText(currentFile);
       });
     }
 
+    setTranslateInProgress(false);
     message.success("翻译完成，已自动下载所有翻译后的字幕文件");
   };
 
@@ -368,7 +358,7 @@ const ClientPage = () => {
       </Flex>
       {translateInProgress && (
         <Modal title="翻译中" open={translateInProgress} footer={null} closable={false}>
-          <Progress type="circle" percent={100} format={() => `${Math.floor(runningTime)}s`} style={{ fontSize: "60px" }} />
+          <Progress type="circle" percent={Math.round(progressPercent * 100) / 100} style={{ fontSize: "60px" }} />
         </Modal>
       )}
       {translationMode === "single" && translatedText && (

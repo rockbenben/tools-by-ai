@@ -95,6 +95,7 @@ const ClientPage = () => {
   };
 
   const testDeeplxTranslation = async () => {
+    setIsLoading(true);
     try {
       const testTranslation = await translateText({
         text: "Hello world",
@@ -108,20 +109,14 @@ const ClientPage = () => {
       return true;
     } catch (error) {
       return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleTranslate = async () => {
-    // Reset Output
-    setJsonOutput("");
-
-    // Check Input
+  const validateInputs = async () => {
     if ((translationMethod === "deepl" && !apiKeyDeepl) || (translationMethod === "google" && !apiKeyGoogleTranslate) || (translationMethod === "azure" && !apiKeyAzure)) {
       message.error("Google/DeepL/Azure 翻译方法中，API Key 不能为空。没有 API 的话，可以使用 DeepLX 免费翻译。");
-      return;
-    }
-    if (!jsonInput) {
-      message.error("JSON Input 不能为空");
       return;
     }
 
@@ -129,10 +124,24 @@ const ClientPage = () => {
       const isDeeplxWorking = await testDeeplxTranslation();
       if (!isDeeplxWorking) {
         message.error("当前 Deeplx 节点有问题，请切换其他翻译模式");
-        setTranslationMethod("google"); // 默认切换到 Google 翻译，可以根据需要调整
-        return;
+        setTranslationMethod("google"); // 默认切换到 Google 翻译
+        return false;
       }
     }
+
+    return true;
+  };
+
+  const handleTranslate = async () => {
+    // Reset Output
+    setJsonOutput("");
+
+    if (!jsonInput) {
+      message.error("JSON Input 不能为空");
+      return;
+    }
+
+    if (!(await validateInputs())) return;
 
     let jsonObject;
     try {
