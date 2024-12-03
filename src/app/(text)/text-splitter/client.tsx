@@ -13,6 +13,7 @@ const ClientPage = () => {
   const [copiedIndexes, setCopiedIndexes] = useState(new Set<number>());
   const [limit, setLimit] = useState(2000);
   const [useSentenceEnd, setUseSentenceEnd] = useState(false);
+  const [customFileName, setCustomFileName] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
@@ -80,36 +81,37 @@ const ClientPage = () => {
     });
   };
 
-  // New function to export full split text as a single file
+  // Export full split text as a single file
   const handleExportFullText = () => {
     if (splittedTexts.length === 0) {
       message.error("没有可导出的文本");
       return;
     }
 
+    const fileName = customFileName || "split_text_full";
     const fullText = splittedTexts.join("\n\n");
     const blob = new Blob([fullText], { type: "text/plain;charset=utf-8" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `split_text_full.txt`;
+    link.download = `${fileName}.txt`;
     link.click();
     URL.revokeObjectURL(link.href);
     message.success("全文本已导出");
   };
 
-  // Modified batch export to create individual text files
+  // Export each split text as a separate file
   const handleBatchExport = () => {
     if (splittedTexts.length === 0) {
       message.error("没有可导出的文本");
       return;
     }
 
-    // Export each split text as a separate file
+    const baseFileName = customFileName || "split_text";
     splittedTexts.forEach((text, index) => {
       const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `split_text_${index + 1}.txt`;
+      link.download = `${baseFileName}_${index + 1}.txt`;
       link.click();
       URL.revokeObjectURL(link.href);
     });
@@ -156,6 +158,9 @@ const ClientPage = () => {
                     批量导出
                   </Button>
                 </Tooltip>
+              </Form.Item>
+              <Form.Item label="导出文件名">
+                <Input value={customFileName} onChange={(e) => setCustomFileName(e.target.value)} />
               </Form.Item>
             </>
           )}
