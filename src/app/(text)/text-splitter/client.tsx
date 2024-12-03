@@ -1,35 +1,34 @@
 "use client";
-
 import React, { useState } from "react";
-import { Button, Input, Typography, Row, Col, Checkbox, message } from "antd";
-import { ScissorOutlined } from "@ant-design/icons";
-import { copyToClipboard } from "@/app/components/copyToClipboard";
+import { Button, Input, Typography, Checkbox, message, Form, Tooltip, Space } from "antd";
+import { ScissorOutlined, FileTextOutlined, DownloadOutlined } from "@ant-design/icons";
+import { copyToClipboard } from "@/app/utils/copyToClipboard";
 
 const { TextArea } = Input;
 const { Title, Paragraph } = Typography;
 
 const ClientPage = () => {
   const [inputText, setInputText] = useState("");
-  const [splittedTexts, setSplittedTexts] = useState([]);
-  const [copiedIndexes, setCopiedIndexes] = useState(new Set());
+  const [splittedTexts, setSplittedTexts] = useState<string[]>([]);
+  const [copiedIndexes, setCopiedIndexes] = useState(new Set<number>());
   const [limit, setLimit] = useState(2000);
   const [useSentenceEnd, setUseSentenceEnd] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
   };
 
-  const handleLimitChange = (e) => {
+  const handleLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLimit(parseInt(e.target.value, 10) || 2000);
   };
 
-  const handleUseSentenceEndChange = (e) => {
+  const handleUseSentenceEndChange = (e: { target: { checked: boolean } }) => {
     setUseSentenceEnd(e.target.checked);
   };
 
   const splitText = () => {
     const singleLineText = inputText.replace(/[\r\n]+/g, " ");
-    const newSplittedTexts = [];
+    const newSplittedTexts: string[] = [];
     let start = 0;
 
     while (start < singleLineText.length) {
@@ -72,13 +71,50 @@ const ClientPage = () => {
     message.success("文本已成功分割。");
   };
 
-  const handleCopy = async (text, index) => {
+  const handleCopy = async (text: string, index: number) => {
     await copyToClipboard(text, "指定文本");
     setCopiedIndexes((prevIndexes) => {
       const newIndexes = new Set(prevIndexes);
       newIndexes.add(index);
       return newIndexes;
     });
+  };
+
+  // New function to export full split text as a single file
+  const handleExportFullText = () => {
+    if (splittedTexts.length === 0) {
+      message.error("没有可导出的文本");
+      return;
+    }
+
+    const fullText = splittedTexts.join("\n\n");
+    const blob = new Blob([fullText], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `split_text_full.txt`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+    message.success("全文本已导出");
+  };
+
+  // Modified batch export to create individual text files
+  const handleBatchExport = () => {
+    if (splittedTexts.length === 0) {
+      message.error("没有可导出的文本");
+      return;
+    }
+
+    // Export each split text as a separate file
+    splittedTexts.forEach((text, index) => {
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `split_text_${index + 1}.txt`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    message.success(`已导出 ${splittedTexts.length} 个文本文件`);
   };
 
   return (
@@ -89,53 +125,52 @@ const ClientPage = () => {
       <Paragraph type="secondary">
         本工具可以帮助您将较长的文本分割成若干段，每段长度根据您设置的字符限制进行分割。方便您在需要遵循字符限制的场景中使用。特别是对于 ChatGPT 的长度限制场景，2000 字符的限制尤为适用。
       </Paragraph>
-      <TextArea name="inputText" placeholder="请输入文本" value={inputText} onChange={handleInputChange} rows={10} style={{ width: "100%", marginBottom: "16px" }} />
-      <Row gutter={16} align="middle">
-        <Col>
-          <span>分割字符数：</span>
-          <Input type="number" value={limit} onChange={handleLimitChange} min={1} max={10000} defaultValue={2000} style={{ width: "auto" }} />
-        </Col>
-        <Col>
-          <Checkbox onChange={handleUseSentenceEndChange} checked={useSentenceEnd} style={{ marginLeft: "10px" }}>
-            优先按整句分割（。！？）
-          </Checkbox>
-        </Col>
-        <Col>
-          <Button onClick={splitText} type="primary" ghost style={{ marginLeft: "10px" }}>
-            分割文本
-          </Button>
-        </Col>
-      </Row>
-      <div>
+      <TextArea name="inputText" placeholder="请输入文本" value={inputText} onChange={handleInputChange} rows={10} style={{ width: "100%" }} allowClear />
+      <Form className="mt-2 -mb-4">
+        <Space>
+          <Form.Item label="分割字符数">
+            <Input type="number" value={limit} onChange={handleLimitChange} min={1} max={10000} defaultValue={2000} />
+          </Form.Item>
+          <Form.Item>
+            <Checkbox onChange={handleUseSentenceEndChange} checked={useSentenceEnd}>
+              优先按整句分割（。！？）
+            </Checkbox>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" onClick={splitText}>
+              分割文本
+            </Button>
+          </Form.Item>
+          {splittedTexts.length > 0 && (
+            <>
+              <Form.Item>
+                <Tooltip title="将所有分割的文本合并到一个文件中，文本之间使用两个换行符分隔">
+                  <Button icon={<FileTextOutlined />} onClick={handleExportFullText}>
+                    导出全文本
+                  </Button>
+                </Tooltip>
+              </Form.Item>
+              <Form.Item>
+                <Tooltip title="将每个分割的文本导出为单独的文本文件">
+                  <Button icon={<DownloadOutlined />} onClick={handleBatchExport}>
+                    批量导出
+                  </Button>
+                </Tooltip>
+              </Form.Item>
+            </>
+          )}
+        </Space>
+      </Form>
+      <>
         {splittedTexts.map((text, index) => (
-          <div
-            key={index}
-            style={{
-              marginTop: "16px",
-              display: "flex",
-              alignItems: "center",
-            }}>
-            <TextArea
-              readOnly
-              value={text}
-              rows={4}
-              style={{
-                width: "100%",
-                marginRight: "8px",
-                marginBottom: "8px",
-              }}
-            />
-            <Button
-              onClick={() => handleCopy(text, index)}
-              style={{
-                marginBottom: "16px",
-                backgroundColor: copiedIndexes.has(index) ? "lightgreen" : undefined,
-              }}>
+          <div key={index} className="mt-1 flex items-center">
+            <TextArea readOnly value={text} rows={4} className="w-full mr-2 mb-2" />
+            <Button onClick={() => handleCopy(text, index)} className={`mb-4 ${copiedIndexes.has(index) ? "bg-green-200" : ""}`}>
               复制
             </Button>
           </div>
         ))}
-      </div>
+      </>
     </>
   );
 };
